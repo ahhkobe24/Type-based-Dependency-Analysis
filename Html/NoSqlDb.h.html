@@ -1,0 +1,246 @@
+<html>
+<head>
+<style>
+body{
+margin: 20px;
+color: black;
+background - color: #eee;
+font - family: Consolas;
+font - weight: 600;
+font - size: 110 % ;}
+.indent{ margin - left: 20px; margin - right: 20px;}
+h4{margin - bottom: 3px;margin - top: 3px;}
+</style>
+</head>
+<body>
+<h3>NoSqlDb.h</h3>
+<hr/>
+<div class = "indent">
+<h4>Dependencies:</h4>
+<a href = "CppProperties.h.html">CppProperties.h</a>
+<a href = "DateTime.h.html">DateTime.h</a>
+</div>
+<hr/>
+<pre>
+<script>function ShowIt(id) {
+if (id.style.display == "block")
+id.style.display = "none";
+else
+id.style.display = "block";
+};
+</script>
+<style>div{ display:inline }</style>#pragma once
+#pragma once
+/////////////////////////////////////////////////////////////////////
+// NoSqlDb.h - key/value pair in-memory database                   //
+// ver 1.2                                                         //
+// Jim Fawcett, CSE687 - Object Oriented Design, Spring 2017       //
+/////////////////////////////////////////////////////////////////////
+/*
+* Package Operations:
+* -------------------
+* This package defines two classes that support key/value storage:
+* - Element&lt;Data&gt; defines a single value stored in the database.
+*   It provides metadata properties:
+*   - nam
+* - manual information
+* - maintenance information
+* - query mechanism
+* - persistance mechanism
+* - TestExecutive that demonstrates the requirements you meet
+*
+* Required Files:
+* ---------------
+*   NoSqlDb.h, NoSqlDb.cpp, CppProperties.h, CppProperties.cpp
+*
+* Maintenance History:
+*---------------------
+* ver 1.2 : 06 Feb 2017
+* - added children
+* - modified Element&lt;Data&gt;::show()
+* - added these comments
+* ver 1.1 : 28 Jan 2017
+* - fixed bug in NoSqlDb::count() by replacing
+*   unordered_map&lt;key,Value&gt;::count() with
+*   unordered_map&lt;key,Value&gt;::size();
+* Ver 1.0 : 25 Jan 2017
+* - first release
+*/
+
+#include &lt;unordered_map&gt;
+#include &lt;string&gt;
+#include &lt;sstream&gt;
+#include &lt;vector&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include "CppProperties.h"
+#include "DateTime.h"
+
+namespace NoSQLDB
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(a)">+</span></div><section id = "a">{
+	using Key = std::string;
+	using Keys = std::vector&lt;Key&gt;;
+	using Name = std::string;
+	using Category = std::string;
+	using Children = std::vector&lt;Key&gt;;
+
+	/////////////////////////////////////////////////////////////////////
+	// Element class represents a data record in our NoSql database
+	// - in our NoSql database that is just the value in a key/value pair
+	// - it needs to store child data, something for you to implement
+	//
+	template&lt;typename Data&gt;
+	class Element
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aa)">+</span></div><section id = "aa">{
+	public:
+
+		Element() <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaa)">+</span></div><section id = "aaa">{}</section>
+		Element(Name aName, Category aCat) : name(aName), category(aCat) <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaa)">+</span></div><section id = "aaaa">{}</section>;
+
+		Property&lt;Name&gt; name;                  // metadata
+		Property&lt;Category&gt; category;          // metadata
+		//Property&lt;DateTime&gt; dateTime;          // metadata
+		Property&lt;Children&gt; children;          // metadata
+		Property&lt;Data&gt; data;                  // data
+
+		void saveChild(Key);
+		std::string show();
+	}</section>;
+
+	template&lt;typename Data&gt;
+	void Element&lt;Data&gt;::saveChild(Key key)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaa)">+</span></div><section id = "aaaaa">{
+		children.getValue().push_back(key);
+	}</section>
+
+	template&lt;typename Data&gt;
+	std::string Element&lt;Data&gt;::show()
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaa)">+</span></div><section id = "aaaaaa">{
+		std::ostringstream out;
+		out.setf(std::ios::adjustfield, std::ios::left);
+		out &lt;&lt; "\n    " &lt;&lt; std::setw(8) &lt;&lt; "name" &lt;&lt; " : " &lt;&lt; name;
+		out &lt;&lt; "\n    " &lt;&lt; std::setw(8) &lt;&lt; "category" &lt;&lt; " : " &lt;&lt; category;
+		//out &lt;&lt; "\n    " &lt;&lt; std::setw(8) &lt;&lt; "dateTime" &lt;&lt; " : " &lt;&lt; DateTime(dateTime).time();
+		Children children_ = static_cast&lt;Children&gt;(children);
+		if (children_.size() &gt; 0)
+		{
+			out &lt;&lt; "\n    " &lt;&lt; std::setw(8) &lt;&lt; "children" &lt;&lt; " : ";
+			for (size_t i = 0; i &lt; children_.size(); ++i)
+			{
+				out &lt;&lt; children_[i];
+				if (i &lt; children_.size())
+					out &lt;&lt; ", ";
+			}
+		}
+		out &lt;&lt; "\n    " &lt;&lt; std::setw(8) &lt;&lt; "data" &lt;&lt; " : " &lt;&lt; data;
+		out &lt;&lt; "\n";
+		return out.str();
+	}</section>
+
+	/////////////////////////////////////////////////////////////////////
+	// NoSqlDb class is a key/value pair in-memory database
+	// - stores and retrieves elements
+	// - you will need to add query capability
+	//   That should probably be another class that uses NoSqlDb
+	//
+	template&lt;typename Data&gt;
+	class NoSqlDb
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaa)">+</span></div><section id = "aaaaaaa">{
+	public:
+		using Key = std::string;
+		using Keys = std::vector&lt;Key&gt;;
+
+		Keys keys();
+		bool hasKey(Key key);
+		bool saveRecord(Key key, Element&lt;Data&gt; elem);
+		bool saveValue(Key key, Element&lt;Data&gt; elem);
+		bool removeRecord(Key key);
+		Element&lt;Data&gt;& value(Key key);
+		size_t count();
+	private:
+		using Item = std::pair&lt;Key, Element&lt;Data&gt;&gt;;
+
+		std::unordered_map&lt;Key, Element&lt;Data&gt;&gt; store;
+	}</section>;
+
+	template&lt;typename Data&gt;
+	typename NoSqlDb&lt;Data&gt;::Keys NoSqlDb&lt;Data&gt;::keys()
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaa)">+</span></div><section id = "aaaaaaaa">{
+		Keys keys;
+		for (Item item : store)
+		{
+			keys.push_back(item.first);
+		}
+		return keys;
+	}</section>
+
+	template&lt;typename Data&gt;
+	bool NoSqlDb&lt;Data&gt;::hasKey(Key key)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaa)">+</span></div><section id = "aaaaaaaaa">{
+		if (store.find(key) == store.end())
+			return false;
+		return true;
+	}</section>
+
+	template&lt;typename Data&gt;
+	bool NoSqlDb&lt;Data&gt;::saveRecord(Key key, Element&lt;Data&gt; elem)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaa">{
+		if (store.find(key) != store.end())
+			return false;
+		store[key] = elem;
+		return true;
+	}</section>
+
+	template&lt;typename Data&gt;
+	bool NoSqlDb&lt;Data&gt;::removeRecord(Key key)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaa">{
+		if (store.find(key) == store.end())
+			return false;
+		size_t numErased = store.erase(key);
+		if (numErased == 1)
+		{
+			// remove key from all other element's children collections
+			for (Key k : keys())
+			{
+				Keys& children = store[k].children.getValue();  // note Keys& - we don't want copy of children
+				Keys::iterator iter;
+				for (iter = children.begin(); iter != children.end(); ++iter)
+				{
+					if ((*iter) == key)
+					{
+						children.erase(iter);
+						break;
+					}
+				}
+			}
+			return true;
+		}
+		return false;
+	}</section>
+
+	template&lt;typename Data&gt;
+	bool NoSqlDb&lt;Data&gt;::saveValue(Key key, Element&lt;Data&gt; elem)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaa">{
+		if (store.find(key) == store.end())
+			return false;
+		store[key] = elem;
+		return true;
+	}</section>
+
+	template&lt;typename Data&gt;
+	Element&lt;Data&gt;& NoSqlDb&lt;Data&gt;::value(Key key)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaa">{
+		
+			return store[key];
+	}</section>
+
+	template&lt;typename Data&gt;
+	size_t NoSqlDb&lt;Data&gt;::count()
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaa">{
+		return store.size();
+	}</section>
+}</section>
+
+</pre>
+</body>
+</html>

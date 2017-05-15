@@ -1,0 +1,154 @@
+<html>
+<head>
+<style>
+body{
+margin: 20px;
+color: black;
+background - color: #eee;
+font - family: Consolas;
+font - weight: 600;
+font - size: 110 % ;}
+.indent{ margin - left: 20px; margin - right: 20px;}
+h4{margin - bottom: 3px;margin - top: 3px;}
+</style>
+</head>
+<body>
+<h3>XmlParser.h</h3>
+<hr/>
+<div class = "indent">
+<h4>Dependencies:</h4>
+<a href = "itokcollection.h.html">itokcollection.h</a>
+<a href = "xmlElementParts.h.html">xmlElementParts.h</a>
+<a href = "XmlElement.h.html">XmlElement.h</a>
+</div>
+<hr/>
+<pre>
+<script>function ShowIt(id) {
+if (id.style.display == "block")
+id.style.display = "none";
+else
+id.style.display = "block";
+};
+</script>
+<style>div{ display:inline }</style>#pragma once
+#pragma once
+#ifndef XMLPARSER_H
+#define XMLPARSER_H
+///////////////////////////////////////////////////////////////////
+// XmlParser.h - build XML parse tree                            //
+// ver 1.3                                                       //
+// Application: Support for XmlDocument, Summer 2015             //
+// Platform:    Dell XPS 2720, Win 8.1 Pro, Visual Studio 2013   //
+// Author:      Jim Fawcett, CST 4-187, 443-3948                 //
+//              jfawcett@twcny.rr.com                            //
+///////////////////////////////////////////////////////////////////
+/*
+* Package Operations:
+* -------------------
+* The XML Document Model is essentially a program-friendly wrapper
+* around an Abstract Syntax Tree (AST) used to contain the results
+* of parsing XML markup.
+*
+* This package provides parsing of an XML file or string and builds
+* it's AST.  See the prologue of the XmlDocument package for more
+* details.
+*
+* XmlParser objects throw if given an invalid path to an XML file.
+*
+* Required Files:
+* ---------------
+*   - XmlParser.h, XmlParser.cpp,
+*   - XmlElementParts.h, XmlElementParts.cpp
+*   - XmlDocument.h, XmlDocument.cpp, XmlElement.h, XmlElement.cpp
+*   - ITokenCollection.h, Tokenizer.h, Tokenizer.cpp
+*   - Utilities.Lib
+
+* Build Process:
+* --------------
+*   devenv XmlParser.sln /debug rebuild
+*
+* Maintenance History:
+* --------------------
+* Ver 1.3 : 01 Jun 15
+* - made constr src string const
+* - added src_ member string
+* Ver 1.2 : 31 May 15
+* - factored parsing code to reduce size and complexity
+* - renamed a couple of methods to improve readability
+* Ver 1.1 : 30 May 15
+* - reconfigured code to use and support repository storage
+*   - using Repository::Utilities
+*   - added Repository\include to Environment's Path to support
+*     #include &lt;utilities&gt;
+* Ver 1.0 : 28 May 15
+* - first release
+*
+* ToDo:
+* -----
+* - polish into production code
+*   - rigourous testing
+*/
+
+#include "itokcollection.h"
+#include "xmlElementParts.h"
+#include "XmlElement.h"
+#include &lt;vector&gt;
+#include &lt;stack&gt;
+#include &lt;memory&gt;
+
+namespace XmlProcessing
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(a)">+</span></div><section id = "a">{
+	class XmlDocument;
+
+	class XmlParser
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aa)">+</span></div><section id = "aa">{
+	public:
+		using sPtr = std::shared_ptr &lt; AbstractXmlElement &gt;;
+		using attrib = std::pair &lt; std::string, std::string &gt;;
+		using attribs = std::vector &lt;attrib&gt;;
+		using ElemStack = std::stack &lt; sPtr &gt;;
+
+		enum sourceType { file, str };
+		XmlParser(const std::string& src, sourceType type = file);
+		bool good();
+		XmlDocument* buildDocument();
+		bool verbose(bool verb = true);
+	private:
+		std::string textFileToString(const std::string& fileSpec);
+		void compress(std::string& xmlStr);
+		std::string enquoteText(const std::string& src);
+		std::string dequoteText(const std::string& src);
+		sPtr createXmlDeclar();
+		sPtr createProcInstr();
+		sPtr createComment();
+		sPtr createTaggedElem();
+		sPtr createTextElem();
+		void processMarkup(ElemStack& stack);
+		void processText(ElemStack& stack);
+		void processEndElem();
+		void extractAttributes();
+		void showAttributes();
+		attribs& attributes();
+		attribs attribs_;
+		ITokCollection* pTokColl_;
+		XmlParts* pXmlParts_;
+		Toker* pToker_ = nullptr;
+		std::string src_;
+		bool verbose_ = false;
+		bool good_ = false;
+	}</section>;
+
+	inline bool XmlParser::good() { return good_; }
+	inline XmlParser::attribs& XmlParser::attributes() <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaa)">+</span></div><section id = "aaa">{ return attribs_; }</section>
+	inline bool XmlParser::verbose(bool verb)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaa)">+</span></div><section id = "aaaa">{
+		bool temp = verbose_;
+		verbose_ = verb;
+		return temp;
+	}</section>
+}</section>
+#endif
+
+</pre>
+</body>
+</html>

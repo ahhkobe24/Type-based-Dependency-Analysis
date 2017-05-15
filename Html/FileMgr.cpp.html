@@ -1,0 +1,106 @@
+<html>
+<head>
+<style>
+body{
+margin: 20px;
+color: black;
+background - color: #eee;
+font - family: Consolas;
+font - weight: 600;
+font - size: 110 % ;}
+.indent{ margin - left: 20px; margin - right: 20px;}
+h4{margin - bottom: 3px;margin - top: 3px;}
+</style>
+</head>
+<body>
+<h3>FileMgr.cpp</h3>
+<hr/>
+<div class = "indent">
+<h4>Dependencies:</h4>
+<a href = "FileMgr.h.html">FileMgr.h</a>
+</div>
+<hr/>
+<pre>
+<script>function ShowIt(id) {
+if (id.style.display == "block")
+id.style.display = "none";
+else
+id.style.display = "block";
+};
+</script>
+<style>div{ display:inline }</style>/////////////////////////////////////////////////////////////////////
+// FileMgr.cpp - find files matching specified patterns            //
+//               on a specified path                               //
+// ver 2.2                                                         //
+// Jim Fawcett, CSE687 - Object Oriented Design, Spring 2016       //
+/////////////////////////////////////////////////////////////////////
+
+#include "FileMgr.h"
+#include &lt;iostream&gt;
+
+using namespace FileManager;
+
+IFileMgr* FileMgr::pInstance_;
+
+IFileMgr* IFileMgr::getInstance()
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(a)">+</span></div><section id = "a">{
+  return FileMgr::getInstance();
+}</section>
+
+#ifdef TEST_FILEMGR
+
+using namespace FileManager;
+
+struct FileHandler : IFileEventHandler
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aa)">+</span></div><section id = "aa">{
+  void execute(const std::string& fileSpec)
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaa)">+</span></div><section id = "aaa">{
+    std::cout &lt;&lt; "\n  --   " &lt;&lt; fileSpec;
+  }</section>
+}</section>;
+
+struct DirHandler : IDirEventHandler
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaa)">+</span></div><section id = "aaaa">{
+  void execute(const std::string& dirSpec)
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaa)">+</span></div><section id = "aaaaa">{
+    std::cout &lt;&lt; "\n  ++ " &lt;&lt; dirSpec;
+  }</section>
+}</section>;
+
+struct DoneHandler : IDoneEventHandler
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaa)">+</span></div><section id = "aaaaaa">{
+  void execute(size_t numFilesProcessed)
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaa)">+</span></div><section id = "aaaaaaa">{
+    std::cout &lt;&lt; "\n\n  Processed " &lt;&lt; numFilesProcessed &lt;&lt; " files";
+  }</section>
+}</section>;
+int main()
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaa)">+</span></div><section id = "aaaaaaaa">{
+  std::cout &lt;&lt; "\n  Testing FileMgr";
+  std::cout &lt;&lt; "\n =================";
+
+  std::string path = FileSystem::Path::getFullFileSpec("..");
+  IFileMgr* pFmgr = FileMgrFactory::create(path);
+
+  FileHandler fh;
+  DirHandler dh;
+  DoneHandler dnh;
+
+  pFmgr-&gt;regForFiles(&fh);
+  pFmgr-&gt;regForDirs(&dh);
+  pFmgr-&gt;regForDone(&dnh);
+
+  pFmgr-&gt;addPattern("*.h");
+  pFmgr-&gt;addPattern("*.cpp");
+  //pFmgr-&gt;addPattern("*.log");
+
+  pFmgr-&gt;search();
+
+  std::cout &lt;&lt; "\n\n";
+  return 0;
+}</section>
+#endif
+
+</pre>
+</body>
+</html>

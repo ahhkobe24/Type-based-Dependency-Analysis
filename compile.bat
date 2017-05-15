@@ -1,0 +1,1 @@
+devenv "Proj2-Xia Hua.sln" /rebuild debug

@@ -1,0 +1,72 @@
+<html>
+<head>
+<style>
+body{
+margin: 20px;
+color: black;
+background - color: #eee;
+font - family: Consolas;
+font - weight: 600;
+font - size: 110 % ;}
+.indent{ margin - left: 20px; margin - right: 20px;}
+h4{margin - bottom: 3px;margin - top: 3px;}
+</style>
+</head>
+<body>
+<h3>IFileMgr.h</h3>
+<hr/>
+<pre>
+<script>function ShowIt(id) {
+if (id.style.display == "block")
+id.style.display = "none";
+else
+id.style.display = "block";
+};
+</script>
+<style>div{ display:inline }</style>#pragma once
+/////////////////////////////////////////////////////////////////////
+// IFileMgr.h - interface for finding files matching specified     //
+//              patterns on a specified path                       //
+// ver 3.0                                                         //
+// Jim Fawcett, MidtermCodeSupplement, Spring 2016                 //
+/////////////////////////////////////////////////////////////////////
+
+#include &lt;string&gt;
+
+namespace FileManager
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(a)">+</span></div><section id = "a">{
+  struct IFileEventHandler
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aa)">+</span></div><section id = "aa">{
+    virtual void execute(const std::string& fileSpec) = 0;
+  }</section>;
+
+  struct IDirEventHandler
+  {
+    virtual void execute(const std::string& dirSpec) = 0;
+  };
+
+  struct IDoneEventHandler
+  {
+    virtual void execute(size_t numFilesProcessed) = 0;
+  };
+
+  struct IFileMgr
+  {
+    virtual ~IFileMgr() {}
+    virtual void addPattern(const std::string& patt) = 0;
+    virtual void search() = 0;
+    virtual void find(const std::string& path) = 0;
+    virtual void regForFiles(IFileEventHandler* pEventHandler) = 0;
+    virtual void regForDirs(IDirEventHandler* pEventHandler) = 0;
+    virtual void regForDone(IDoneEventHandler* pEventHandler) = 0;
+    static IFileMgr* getInstance();
+  };
+
+  struct FileMgrFactory
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaa)">+</span></div><section id = "aaa">{
+    static IFileMgr* create(const std::string& path);
+  }</section>;
+}</section>
+</pre>
+</body>
+</html>

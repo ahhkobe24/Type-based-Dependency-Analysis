@@ -1,0 +1,208 @@
+<html>
+<head>
+<style>
+body{
+margin: 20px;
+color: black;
+background - color: #eee;
+font - family: Consolas;
+font - weight: 600;
+font - size: 110 % ;}
+.indent{ margin - left: 20px; margin - right: 20px;}
+h4{margin - bottom: 3px;margin - top: 3px;}
+</style>
+</head>
+<body>
+<h3>TypeTable.h</h3>
+<hr/>
+<pre>
+<script>function ShowIt(id) {
+if (id.style.display == "block")
+id.style.display = "none";
+else
+id.style.display = "block";
+};
+</script>
+<style>div{ display:inline }</style>#pragma once
+#pragma once
+///////////////////////////////////////////////////////////////////
+// TypeTable - Define a class to store global types declerated in files  //
+//                                                                       //
+// Ver 1.0                                                               //
+// Application: CSE687 Pr#2, Spring 2017                                //
+// Platform:    Dell XPS 2720, Win 10 Pro, Visual Studio 2015           //
+// Author:      Xia Hua                                                 //
+//              xhua02@syr.edu                                         //
+/////////////////////////////////////////////////////////////////
+/*
+* Package Operations:
+* -------------------
+* This package is to define Define a class to store global types declerated in files.
+*
+Class
+---------------------------------
+* TypeTable
+
+improtant functions
+---------------------------------
+using SPtr = std::shared_ptr&lt;ASTNode*&gt;;       
+std::vector&lt;std::string&gt; keys();                      -----------return keys in tyetable
+TypeTable();                                          -----------constructor
+void doTypeAnal();                                    -----------start denpend analysis
+TypeElement value(std::string key);                   ------------return the value of the key
+std::string getPath();                                --------------get path
+bool insert(std::string key, TypeElement elem);      -------------insert element into tyeptable
+void doDisplay();                                     -----------display tyeptable
+void DFS(ASTNode* pNode);                           -----------Scan ASTtree ,extract data and store in tyetable
+
+* Required Files:
+* ---------------
+*   - ActionsAndRules.h
+* Maintenance History:
+* --------------------
+* ver 1.0 : 4 March 2017
+* - First release
+*
+*/
+
+#include "../Parser/ActionsAndRules.h"
+#include &lt;iostream&gt;
+#include &lt;functional&gt;
+
+#pragma warning (disable : 4101)  // disable warning re unused variable x, below
+namespace CodeAnalysis
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(a)">+</span></div><section id = "a">{
+
+	struct TypeElement
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aa)">+</span></div><section id = "aa">{
+		std::string name;
+		std::string type;
+		std::string filepath;
+	}</section>;
+
+  class TypeTable
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaa)">+</span></div><section id = "aaa">{
+  public:
+    using SPtr = std::shared_ptr&lt;ASTNode*&gt;;
+	std::vector&lt;std::string&gt; keys();
+	TypeTable();
+    void doTypeAnal();
+	TypeElement value(std::string key);
+	std::string getPath();
+	bool insert(std::string key, TypeElement elem);
+	void doDisplay();
+	void DFS(ASTNode* pNode);
+  private:
+
+    AbstrSynTree& ASTref_;
+    ScopeStack&lt;ASTNode*&gt; scopeStack_;
+    Scanner::Toker& toker_;
+	using Item = std::pair&lt;std::string, TypeElement&gt;;
+	std::unordered_map&lt;std::string, TypeElement&gt; store;
+	std::string path;
+  }</section>;
+
+  //----&lt; Using Repository to initialize TypeTable &gt;---------------------
+  inline TypeTable::TypeTable() :
+    ASTref_(Repository::getInstance()-&gt;AST()),
+    scopeStack_(Repository::getInstance()-&gt;scopeStack()),
+    toker_(*(Repository::getInstance()-&gt;Toker()))
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaa)">+</span></div><section id = "aaaa">{
+    std::function&lt;void()&gt; test = [] { int x; };  // This is here to test detection of lambdas.
+  }</section>                                              // It doesn't do anything useful for dep anal.
+
+  std::vector&lt;std::string&gt; TypeTable::keys()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaa)">+</span></div><section id = "aaaaa">{
+	  std::vector&lt;std::string&gt; keys;
+	  for (Item item : store)
+	  {
+		  keys.push_back(item.first);
+	  }
+	  return keys;
+  }</section>
+
+
+  //----&lt; return the value of key &gt;---------------------
+  TypeElement TypeTable::value(std::string key)
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaa)">+</span></div><section id = "aaaaaa">{
+	  if (store.find(key) != store.end())
+		  return store[key];
+	  return TypeElement();
+  }</section>
+  //----&lt; display the tyeptable &gt;---------------------
+  void TypeTable::doDisplay()
+  {
+	  std::vector&lt;std::string&gt; keysall = keys();
+	  for (size_t i = 0; i &lt; keysall.size(); i++)
+	  {
+		  TypeElement elem = value(keysall[i]);
+		  std::cout &lt;&lt; "\n" &lt;&lt; elem.name &lt;&lt; " , " &lt;&lt; elem.type &lt;&lt; " , " &lt;&lt; elem.filepath;
+	  }
+  }
+
+  //----&lt; return path &gt;---------------------
+  std::string TypeTable::getPath()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaa)">+</span></div><section id = "aaaaaaa">{
+	  return path;
+  }</section>
+
+  //----&lt; insert element into typetable &gt;---------------------
+  bool TypeTable::insert(std::string key, TypeElement elem)
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaa)">+</span></div><section id = "aaaaaaaa">{
+	  if (store.find(key) != store.end())
+	  {
+		  store[key].filepath += "+" + elem.filepath;
+	  }
+	  store[key] = elem;
+	  //std::cout &lt;&lt; "Element " &lt;&lt; elem.name &lt;&lt; " has been inserted!!" &lt;&lt; "\n";
+	  return true;
+  }</section>
+
+  //----&lt; Scan ASTtree ,extract data and store in tyetable &gt;---------------------
+  inline void TypeTable::DFS(ASTNode* pNode)
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaa)">+</span></div><section id = "aaaaaaaaa">{
+	  int i = 1;
+	TypeElement elem0;
+	elem0.name = pNode-&gt;name_;
+	elem0.type = pNode-&gt;type_;
+
+	insert(elem0.name, elem0);
+	  for (auto c : pNode-&gt;decl_)
+	  {
+		  TypeElement elemdec;
+		  elemdec.name = c.name;
+		  elemdec.type = "decleration";
+		  elemdec.filepath = c.package_;
+		  insert(elemdec.name, elemdec);
+		  i++;
+	  }
+	  for (auto b : pNode-&gt;children_)
+	  {
+		  TypeElement elemchild;
+		  elemchild.name =b-&gt;name_;
+		  elemchild.type = b-&gt;type_;
+		  elemchild.filepath = b-&gt;package_;
+		/*  std::cout &lt;&lt; b-&gt;name_ &lt;&lt; "&&&&&&&&&&&&&&&&\n";
+		  for (size_t i = 0; i &lt; b-&gt;statements_.size(); i++)
+		  {
+			  std::cout &lt;&lt; b-&gt;statements_[i]&lt;&lt;"888888888888888888888\n";
+		  }*/
+		  insert(elemchild.name, elemchild);
+		  i++;
+	 }
+  }</section>
+
+  //----&lt; start type analysis &gt;---------------------
+  inline void TypeTable::doTypeAnal()
+  {
+    //std::cout &lt;&lt; "\n  starting type analysis:\n";
+    //std::cout &lt;&lt; "\n  scanning AST and displaying TypeTable:";
+    //std::cout &lt;&lt; "\n -----------------------------------------------";
+    ASTNode* pRoot = ASTref_.root();
+    DFS(pRoot);
+	//doDisplay();
+  }
+}</section>
+</pre>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<html>
+<head>
+<style>
+body{
+margin: 20px;
+color: black;
+background - color: #eee;
+font - family: Consolas;
+font - weight: 600;
+font - size: 110 % ;}
+.indent{ margin - left: 20px; margin - right: 20px;}
+h4{margin - bottom: 3px;margin - top: 3px;}
+</style>
+</head>
+<body>
+<h3>TypeTable.cpp</h3>
+<hr/>
+<div class = "indent">
+<h4>Dependencies:</h4>
+<a href = "TypeTable.h.html">TypeTable.h</a>
+</div>
+<hr/>
+<pre>
+<script>function ShowIt(id) {
+if (id.style.display == "block")
+id.style.display = "none";
+else
+id.style.display = "block";
+};
+</script>
+<style>div{ display:inline }</style>////////////////////////////////////////////////////////////////////////////////
+// DependAnal.cpp - Define a class to do the dependency analysis and          //
+//                save it to Nosqldb                                          //
+// Ver 1.0                                                                   //
+// Application: CSE687 Pr#2, Spring 2017                                     //
+// Platform:    Win 10 Pro, Visual Studio 2015                              //
+// Author:      Xia Hua                                                    //
+//              xhua02@syr.edu                                            //  
+////////////////////////////////////////////////////////////////////////////
+
+
+#include "TypeTable.h"
+#include "../AbstractSyntaxTree/AbstrSynTree.h"
+
+
+#ifdef TEST_TypeTable
+int main()
+{
+	CodeAnalysis::TypeTable tt;
+	CodeAnalysis::ASTNode* pst1 = new CodeAnalysis::ASTNode();
+	CodeAnalysis::ASTNode* pst2 = new CodeAnalysis::ASTNode();
+	pst1-&gt;name_ = "node1";
+	pst2-&gt;name_ = "node2";
+	pst1-&gt;children_[0] = pst1;
+	tt.DFS(pst1);
+	tt.doDisplay();
+	return 0;
+}
+#endif
+</pre>
+</body>
+</html>

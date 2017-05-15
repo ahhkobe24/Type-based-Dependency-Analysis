@@ -1,0 +1,181 @@
+<html>
+<head>
+<style>
+body{
+margin: 20px;
+color: black;
+background - color: #eee;
+font - family: Consolas;
+font - weight: 600;
+font - size: 110 % ;}
+.indent{ margin - left: 20px; margin - right: 20px;}
+h4{margin - bottom: 3px;margin - top: 3px;}
+</style>
+</head>
+<body>
+<h3>Queries.cpp</h3>
+<hr/>
+<pre>
+<script>function ShowIt(id) {
+if (id.style.display == "block")
+id.style.display = "none";
+else
+id.style.display = "block";
+};
+</script>
+<style>div{ display:inline }</style>///////////////////////////////////////////////////////////////////////
+//// Queries.cpp - retrieve NoSqlDb contents                         //
+//// ver 1.0                                                         //
+//// Jim Fawcett, CSE687 - Object Oriented Design, Spring 2017       //
+///////////////////////////////////////////////////////////////////////
+//
+//#ifdef TEST_QUERIES
+//
+//#include "Queries.h"
+//#include "../NoSqlDb/NoSqlDb.h"
+//#include "../Display/Display.h"
+//#include &lt;iostream&gt;
+//#include &lt;string&gt;
+//
+//using namespace NoSQLDB;
+//
+//int main()
+//{
+//	using StrData = std::string;
+//
+//	std::cout &lt;&lt; "\n  Demonstrating NoSql Queries";
+//	std::cout &lt;&lt; "\n =============================\n";
+//
+//	std::cout &lt;&lt; "\n  Creating and saving NoSqlDb elements with string data";
+//	std::cout &lt;&lt; "\n -------------------------------------------------------\n";
+//
+//	NoSqlDb&lt;StrData&gt; db;
+//
+//	Element&lt;StrData&gt; elem1;
+//	elem1.name = "elem1";
+//	elem1.category = "test";
+//	elem1.data = "elem1's StrData";
+//
+//	db.saveRecord(elem1.name, elem1);
+//
+//	Element&lt;StrData&gt; elem2;
+//	elem2.name = "elem2";
+//	elem2.category = "test";
+//	elem2.data = "elem2's StrData";
+//
+//	db.saveRecord(elem2.name, elem2);
+//
+//	Element&lt;StrData&gt; elem3;
+//	elem3.name = "elem3";
+//	elem3.category = "test";
+//	elem3.data = "elem3's StrData";
+//
+//	db.saveRecord(elem3.name, elem3);
+//
+//	elem1.saveChild(elem2.name);
+//	elem1.saveChild(elem3.name);
+//	elem2.saveChild(elem3.name);
+//	db.saveValue(elem1.name, elem1);
+//	db.saveValue(elem2.name, elem2);
+//
+//	std::cout &lt;&lt; "\n  Displaying elements from NoSqlDb&lt;string&gt;";
+//	std::cout &lt;&lt; "\n ------------------------------------------\n";
+//
+//	Display&lt;StrData&gt; display(db);
+//	display.showAll();
+//
+//	std::cout &lt;&lt; "\n  Testing Queries";
+//	std::cout &lt;&lt; "\n -----------------";
+//
+//	Query&lt;StrData&gt; query(db);
+//
+//	Query&lt;StrData&gt;::QueryType debugNoQuery = [](const std::string& arg, Keys keys)
+//	{
+//		std::cout &lt;&lt; "\n  debugNoQuery:";
+//		std::cout &lt;&lt; "\n  " &lt;&lt; arg;
+//		return keys;
+//	};
+//	query.execute(debugNoQuery, "Hello query world!", db.keys());
+//	std::cout &lt;&lt; "\n";
+//
+//	Query&lt;StrData&gt;::QueryType names = [&db](const std::string& arg, Keys keys)
+//	{
+//		std::cout &lt;&lt; "\n  names NoQuery:";
+//		std::cout &lt;&lt; "\n  names in db: ";
+//		for (Key k : keys)
+//		{
+//			std::cout &lt;&lt; db.value(k).name &lt;&lt; " ";
+//		}
+//		return keys;
+//	};
+//	query.execute(names, "", db.keys());
+//	std::cout &lt;&lt; "\n";
+//
+//	Query&lt;StrData&gt;::QueryType getElem = [&db](const Query&lt;StrData&gt;::Arg& arg, Keys keys)
+//	{
+//		Keys returnKeys;
+//		std::cout &lt;&lt; "\n  getElem Query";
+//		for (Key k : keys)
+//		{
+//			if ((db.value(k)).name.getValue() == arg)
+//				returnKeys.push_back(arg);
+//		}
+//		return returnKeys;
+//	};
+//
+//	Keys qkeys = query.execute(getElem, "elem3", db.keys());
+//	std::cout &lt;&lt; "\n  size of returned keyset = " &lt;&lt; qkeys.size();
+//	std::cout &lt;&lt; "\n  returned keys are: ";
+//	for (Key k : qkeys)
+//		std::cout &lt;&lt; k &lt;&lt; " ";
+//	std::cout &lt;&lt; "\n";
+//	display.showQuery(qkeys);
+//
+//	Query&lt;StrData&gt;::QueryType hasChildren = [&db](const std::string& arg, Keys keys)
+//	{
+//		Keys returnKeys;
+//		std::cout &lt;&lt; "\n  hasChildren query:";
+//		for (Key k : keys)
+//		{
+//			if ((db.value(k)).children.getValue().size() &gt; 0)
+//				returnKeys.push_back(k);
+//		}
+//		return returnKeys;
+//	};
+//
+//	qkeys = query.execute(hasChildren, "", db.keys());
+//	std::cout &lt;&lt; "\n  size of returned keyset = " &lt;&lt; qkeys.size();
+//	std::cout &lt;&lt; "\n  returned keys are: ";
+//	for (Key k : qkeys)
+//		std::cout &lt;&lt; k &lt;&lt; " ";
+//	std::cout &lt;&lt; "\n";
+//	display.showQuery(qkeys);
+//
+//	std::cout &lt;&lt; "\n  Testing Compound Query - getting elem1 AND elem2 - second query will be empty";
+//	std::cout &lt;&lt; "\n -------------------------------------------------------------------------------";
+//
+//	qkeys = query.execute(getElem, "elem1", qkeys);
+//	std::cout &lt;&lt; "\n  size of returned keyset = " &lt;&lt; qkeys.size();
+//	std::cout &lt;&lt; "\n  returned keys are: ";
+//	for (Key k : qkeys)
+//		std::cout &lt;&lt; k &lt;&lt; " ";
+//	std::cout &lt;&lt; "\n";
+//	display.showQuery(qkeys);
+//
+//	qkeys = query.execute(getElem, "elem2", qkeys);
+//	std::cout &lt;&lt; "\n  size of returned keyset = " &lt;&lt; qkeys.size();
+//	std::cout &lt;&lt; "\n  returned keys are: ";
+//	for (Key k : qkeys)
+//		std::cout &lt;&lt; k &lt;&lt; " ";
+//	std::cout &lt;&lt; "\n";
+//	display.showQuery(qkeys);
+//
+//	TestQueries&lt;std::string&gt; tq(std::cout);
+//	tq.doQueries(db);
+//	std::cout &lt;&lt; "\n\n";
+//}
+//#endif
+
+</pre>
+</body>
+</html>

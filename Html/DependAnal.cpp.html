@@ -1,0 +1,67 @@
+<html>
+<head>
+<style>
+body{
+margin: 20px;
+color: black;
+background - color: #eee;
+font - family: Consolas;
+font - weight: 600;
+font - size: 110 % ;}
+.indent{ margin - left: 20px; margin - right: 20px;}
+h4{margin - bottom: 3px;margin - top: 3px;}
+</style>
+</head>
+<body>
+<h3>DependAnal.cpp</h3>
+<hr/>
+<div class = "indent">
+<h4>Dependencies:</h4>
+<a href = "DependAnal.h.html">DependAnal.h</a>
+</div>
+<hr/>
+<pre>
+<script>function ShowIt(id) {
+if (id.style.display == "block")
+id.style.display = "none";
+else
+id.style.display = "block";
+};
+</script>
+<style>div{ display:inline }</style>////////////////////////////////////////////////////////////////////////////////
+// DependAnal.cpp - Define a class to do the dependency analysis and          //
+//                save it to Nosqldb                                          //
+// Ver 1.0                                                                   //
+// Application: CSE687 Pr#2, Spring 2017                                     //
+// Platform:    Win 10 Pro, Visual Studio 2015                              //
+// Author:      Xia Hua                                                    //
+//              xhua02@syr.edu                                            //  
+////////////////////////////////////////////////////////////////////////////
+
+
+#include "DependAnal.h"
+#include "../TypeTable/TypeTable.h"
+
+
+#ifdef TEST_DepemdA
+int main()
+{
+	Scanner::DepAnalsis dpa;
+	CodeAnalysis::TypeElement te1;
+	te1.filepath = "text1.h";
+	te1.name = "aaa";
+	te1.type = "decleration";
+	CodeAnalysis::TypeElement te2;
+	te2.filepath = "text2.h";
+	te2.name = "bbb";
+	te2.type = "decleration";
+	CodeAnalysis::TypeTable tt;
+	tt.insert(te1.name , te1);
+	tt.insert(te2.name, te2);
+	dpa.isDepend(tt);
+	return 0;
+}
+#endif
+</pre>
+</body>
+</html>

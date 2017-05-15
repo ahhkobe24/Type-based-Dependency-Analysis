@@ -1,0 +1,188 @@
+<html>
+<head>
+<style>
+body{
+margin: 20px;
+color: black;
+background - color: #eee;
+font - family: Consolas;
+font - weight: 600;
+font - size: 110 % ;}
+.indent{ margin - left: 20px; margin - right: 20px;}
+h4{margin - bottom: 3px;margin - top: 3px;}
+</style>
+</head>
+<body>
+<h3>DependAnal.h</h3>
+<hr/>
+<pre>
+<script>function ShowIt(id) {
+if (id.style.display == "block")
+id.style.display = "none";
+else
+id.style.display = "block";
+};
+</script>
+<style>div{ display:inline }</style>#pragma once
+#pragma once
+///////////////////////////////////////////////////////////////////
+// DependAnal - Define a class to do the dependency analysis and//
+//                save it to Nosqldb                              //
+// Ver 1.0                                                       //
+// Application: CSE687 Pr#2, Spring 2017                         //
+// Platform:    Dell XPS 2720, Win 10 Pro, Visual Studio 2015   //
+// Author:      Xia Hua                                         //
+//              xhua02@syr.edu                                  //
+/////////////////////////////////////////////////////////////////
+/*
+* Package Operations:
+* -------------------
+* This package is to define DepAnalsis class, it has to do the dependency analysis and save it to Nosqldb.
+*
+Class
+---------------------------------
+* DepAnalsis
+
+improtant functions
+---------------------------------
+//--------keys or key operation
+bool isDepend(CodeAnalysis::TypeTable typetable); ------extract data from typetable and analysis dependency, save the result to Nosqldb 
+bool construcGragh();                            -------call function in class Graph , to construct graph
+void displayNosql();                              ---------display the Nosqldb 
+void showGraph();                                     -------call function in class Graph , to display graph
+void findSsc();                                   -------call function in class Graph , to find scc in graph
+void dispalySsc();                                   -------call function in class Graph , to display scc in graph
+void saveScc();                              -----------save Scc to Nosqldb, element in Nosqldb have the same category are in the same ssc
+void savetoXml();                            -------save to xml file
+void setFiles(std::vector&lt;std::string&gt; filepara);  -------set files
+void setPath(std::string path);                   -----------set path
+
+* Required Files:
+* ---------------
+*   - TypeTable.h  -NoSqlDb.h
+*   - Persist.h    -Display.h
+*   - Graph.h
+* Maintenance History:
+* --------------------
+* ver 1.0 : 4 March 2017
+* - First release
+*
+*/
+#include"../TypeTable/TypeTable.h"
+#include &lt;iostream&gt;
+#include &lt;functional&gt;
+#include "../Nosqldb/NoSqlDb.h"
+#include "../Nosqldb/Persist.h"
+#include "../Nosqldb/Display.h"
+
+#include &lt;sstream&gt;
+
+
+
+namespace Scanner
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(a)">+</span></div><section id = "a">{
+	class DepAnalsis
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aa)">+</span></div><section id = "aa">{
+	public:
+		bool isDepend(CodeAnalysis::TypeTable typetable);
+		void displayNosql();
+		
+		void setFiles(std::vector&lt;std::string&gt; filepara);
+		void setPath(std::string path);
+		NoSQLDB::NoSqlDb&lt;std::string&gt;* getDb();
+	private:
+		Toker toker;
+		std::string dirpath;
+		NoSQLDB::NoSqlDb&lt;std::string&gt; db;
+		std::unordered_map&lt;int, std::vector&lt;int&gt;&gt; component;
+		std::vector&lt;std::string&gt; files;
+
+		
+	}</section>;
+
+	NoSQLDB::NoSqlDb&lt;std::string&gt;* DepAnalsis::getDb()
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaa)">+</span></div><section id = "aaa">{
+		return &db;
+	}</section>
+	//----&lt; set path &gt;---------------------
+	void DepAnalsis::setPath(std::string path)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaa)">+</span></div><section id = "aaaa">{
+		dirpath = path;
+	}</section>
+
+	//----&lt; set files &gt;---------------------
+	void DepAnalsis::setFiles(std::vector&lt;std::string&gt; filepara)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaa)">+</span></div><section id = "aaaaa">{
+		files.insert(files.end(), filepara.begin(), filepara.end());
+	}</section>
+
+	//----&lt; extract data from typetable and analysis dependency, save the result to Nosqldb &gt;------------------------------------
+	bool DepAnalsis::isDepend(CodeAnalysis::TypeTable typetable)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaa)">+</span></div><section id = "aaaaaa">{
+		try
+		{
+			std::cout &lt;&lt; "\n\n"; std::cout &lt;&lt; "\n --------------------Displaying dependency relationship--------------------";std::vector&lt;std::string&gt; keysall = typetable.keys();
+			for (auto tmp : files)
+			{
+				std::string data; NoSQLDB::Element&lt;std::string&gt; elemdb;std::string a = tmp.substr(tmp.find_last_of("\\") + 1); elemdb.name = a;
+				for (auto b : keysall)
+				{
+					if (typetable.value(b).filepath == a)
+					{data = data + typetable.value(b).name + ", ";}
+				}
+				elemdb.data = data; db.saveRecord(elemdb.name, elemdb);
+			}
+			for (auto c : files) {
+				std::string tmp = c.substr(c.find_last_of("\\") + 1);bool find = false; std::ifstream in(c);
+				if (!in.good())
+				{
+					std::cout &lt;&lt; "\n  can't open " &lt;&lt; c &lt;&lt; "\n\n";return 1;
+				}
+				{toker.returnComments();
+				toker.attach(&in);
+				do
+				{
+					std::string tok = toker.getTok();
+					if (tok == "include")
+					{
+						std::string nexttok = toker.getTok();std::vector&lt;std::string&gt; vec = db.keys();
+						for (size_t i = 0; i &lt; vec.size(); i++)
+						{
+							if (nexttok.find(db.value(vec[i]).name) &lt; 10)
+							{
+								std::cout &lt;&lt; "\n" &lt;&lt; tmp &lt;&lt; " depend on " &lt;&lt; db.value(vec[i]).name;db.value(tmp).saveChild(db.value(vec[i]).name);
+								break;
+							}
+						}
+					}
+
+				} while (in.good());
+				}
+			}
+		}
+			catch (std::logic_error& ex)
+			{std::cout &lt;&lt; "\n  " &lt;&lt; ex.what();}
+			std::cout &lt;&lt; "\n\n";return 0;
+	}</section>
+
+	void  DepAnalsis::displayNosql()
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaa)">+</span></div><section id = "aaaaaaa">{
+		std::cout &lt;&lt; "\n\n -------------Displaying Nosqldb-------------  ";
+		std::cout &lt;&lt; "\n -----The same catagory means that these element in the same strong component---------  ";
+		std::cout &lt;&lt; "\n -----data means its global element and child means files depend on---------  ";
+		NoSQLDB::Display&lt;std::string&gt; display(db);
+			std::vector&lt;std::string&gt; ikeys = db.keys();
+			for (auto key : ikeys)
+			{
+				std::cout &lt;&lt; "\n  " &lt;&lt; key &lt;&lt; ":";
+				std::cout &lt;&lt; db.value(key).show();
+			}
+	}</section>
+
+
+
+}</section>
+
+</pre>
+</body>
+</html>

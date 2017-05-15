@@ -1,0 +1,463 @@
+<html>
+<head>
+<style>
+body{
+margin: 20px;
+color: black;
+background - color: #eee;
+font - family: Consolas;
+font - weight: 600;
+font - size: 110 % ;}
+.indent{ margin - left: 20px; margin - right: 20px;}
+h4{margin - bottom: 3px;margin - top: 3px;}
+</style>
+</head>
+<body>
+<h3>FileSystemTest.cpp</h3>
+<hr/>
+<div class = "indent">
+<h4>Dependencies:</h4>
+<a href = "UnitTest.h.html">UnitTest.h</a>
+</div>
+<hr/>
+<pre>
+<script>function ShowIt(id) {
+if (id.style.display == "block")
+id.style.display = "none";
+else
+id.style.display = "block";
+};
+</script>
+<style>div{ display:inline }</style>/////////////////////////////////////////////////////////////////////////
+// FileSystemTest.cpp - Unit test cases for the FileSystem namespace   //
+// ver 1.1                                                             //
+// ------------------------------------------------------------------- //
+// copyright © Jim Fawcett, 2012                                       //
+// All rights granted provided that this notice is retained            //
+// ------------------------------------------------------------------- //
+// Jim Fawcett, Summer Projects, 2012                                  //
+/////////////////////////////////////////////////////////////////////////
+/*
+ * ver 1.1 : 23 Feb 13
+ * - added tests in File::testFileExists()
+ * - added tests in Path::getExt(...) for test cases 
+ *   *.cpp, ../noExt ..\\someFile.ext
+ */
+#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;string&gt;
+#include &lt;algorithm&gt;
+#include "../FileSystemDemo/FileSystem.h"
+#include "UnitTest.h"
+
+using namespace FileSystem;
+using namespace Test;
+
+class TestFile : public TestBase&lt;TestFile&gt;
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(a)">+</span></div><section id = "a">{
+public:
+  TestFile() : testFilePath("..\\FileSystemDemo\\FileSystem.cpp")
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aa)">+</span></div><section id = "aa">{
+    std::cout &lt;&lt; "\n\n  Testing File class";
+  }</section>
+  bool testName()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaa)">+</span></div><section id = "aaa">{
+    File testFile(testFilePath);
+    std::string name = Path::getName(testFile.name());
+    std::string check = Path::getName(testFilePath);
+    return checkResult(name == check, "testName");
+  }</section>
+
+  bool testGetAndPutLine()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaa)">+</span></div><section id = "aaaa">{
+    std::string testline = "a test line";
+    File outTestFile("tempTestFile.txt");
+    outTestFile.open(File::out);
+    if(outTestFile.isGood())
+    {
+      outTestFile.putLine(testline);
+      outTestFile.putLine(testline);
+    }
+    std::string line1, line2;
+    File inTestFile("tempTestFile.txt");
+    inTestFile.open(File::in);
+    if(inTestFile.isGood())
+    {
+      line1 = inTestFile.getLine();
+      line2 = inTestFile.getLine();
+    }
+    return checkResult(
+      line1 == testline && line2 == testline, 
+      "testGetAndPutLine"
+    );
+  }</section>
+
+  bool testGetAndPutBlock()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaa)">+</span></div><section id = "aaaaa">{
+    Byte blockArray[] = { 'a', 'b', 'c', 'd' };
+    Block block(&blockArray[0], &blockArray[4]);
+    File outTestFile("tempTestFile.bin");
+    outTestFile.open(File::out, File::binary);
+    if(outTestFile.isGood())
+    {
+      outTestFile.putBlock(block);
+      outTestFile.putBlock(block);
+      outTestFile.close();
+    }
+    Block block1, block2;
+    File inTestFile("tempTestFile.bin");
+    inTestFile.open(File::in, File::binary);
+    if(inTestFile.isGood())
+    {
+      block1 = inTestFile.getBlock(block.size());
+      block2 = inTestFile.getBlock(block.size());
+    }
+    return checkResult(
+      block1 == block && block2 == block, 
+      "testGetAndPutBlock"
+    );
+  }</section>
+
+  bool testExists()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaa)">+</span></div><section id = "aaaaaa">{
+    bool t1, t2;
+    std::string testFileSpec = "test.txt";
+    t1 = File::exists(testFileSpec);
+    testFileSpec = "foobar";
+    t2 = !File::exists(testFileSpec);
+    return checkResult(t1 & t2, "testExists");
+  }</section>
+
+  bool testCopyAndRemove()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaa)">+</span></div><section id = "aaaaaaa">{
+    bool t1, t2, t3, t4;
+    std::string testFileSpec = "test.txt";
+    std::string dst = "..\\test.txt";
+    if(File::exists(testFileSpec))
+    {
+      t1 = File::copy(testFileSpec,dst,false);
+      t2 = File::exists(dst);
+      t3 = File::remove(dst);
+      t4 = !File::exists(dst);
+      return checkResult(t1 && t2 && t3 && t4, "testCopyAndRemove");
+    }
+    else
+    {
+      std::cout &lt;&lt; "\n  " &lt;&lt; testFileSpec &lt;&lt; " does not exist";
+      return failed("testCopyAndRemove");
+    }
+  }</section>
+
+  bool test()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaa)">+</span></div><section id = "aaaaaaaa">{
+    bool t1, t2, t3, t4, t5;
+    t1 = doTest(&TestFile::testName);
+    t2 = doTest(&TestFile::testGetAndPutLine);
+    t3 = doTest(&TestFile::testGetAndPutBlock);
+    t4 = doTest(&TestFile::testExists);
+    t5 = doTest(&TestFile::testCopyAndRemove);
+    return t1 && t2 && t3 && t4 && t5;
+  }</section>
+private:
+    const std::string testFilePath;
+}</section>;
+
+class TestFileInfo : public TestBase&lt;TestFileInfo&gt;
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaa)">+</span></div><section id = "aaaaaaaaa">{
+public:
+  TestFileInfo() : testFilePath("..\\FileSystemDemo\\FileSystem.cpp")
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaa">{
+    std::cout &lt;&lt; "\n\n  Testing FileInfo class";
+  }</section>
+  bool testConstruction()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaa">{
+    FileInfo fi(testFilePath);
+    return checkResult(fi.good(), "testConstruction");
+  }</section>
+  bool testName()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaa">{
+    FileInfo fi(testFilePath);
+    std::string name = fi.name();
+    std::string check = Path::getName(testFilePath);
+
+    //throw std::exception("testFileInfoName");
+    
+    return checkResult(name == check, "testName");
+  }</section>
+  bool testDate()
+  {
+    bool t1, t2, t3;
+    FileInfo fi(testFilePath);
+    std::string date = fi.date(FileInfo::fullformat);
+    t1 = date.find("/") &lt; date.size() && date.find(":") &lt; date.size();
+    date = fi.date(FileInfo::dateformat);
+    t2 = date.find("/") &lt; date.size() && date.find(":") &gt;= date.size();
+    date = fi.date(FileInfo::timeformat);
+    t3 = date.find("/") &gt;= date.size() && date.find(":") &lt; date.size();
+    return checkResult(t1 && t2 && t3, "testDate");
+  }
+  bool testSize()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaa">{
+    bool t1, t2;
+    File testSize("testsize");
+    testSize.open(File::out, File::binary);
+    FileInfo fi("testsize");
+    size_t size = fi.size();
+    t1 = size == 0;
+    Byte bytes[] = { 'a', 'b', 'c', 'd' };
+    Block blk(&bytes[0], &bytes[4]);
+    testSize.putBlock(blk);
+    testSize.close();
+    FileInfo fi2("testsize");
+    size = fi2.size();
+    t2 = size == 4;
+    return checkResult(t1 && t2, "testSize");
+  }</section>
+
+  bool testNameCompare()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaa">{
+    bool t1, t2, t3, t4, t5, t6, t7, t8;
+    t1 = t2 = t3 = t4 = t5 = t6 = t7 = t8 = false;
+    File testA("testA");
+    testA.open(File::out);
+    ::Sleep(50);
+    if(testA.isGood())
+      testA.putLine("a line of text");
+    testA.close();
+    File testB("testB");
+    testB.open(File::out);
+    ::Sleep(50);
+    if(testB.isGood())
+      testB.putLine("text");
+    testB.close();
+    FileInfo fiA("testA");
+    FileInfo fiB("testB");
+    t1 = fiA &lt; fiB;
+    t2 = !(fiA == fiB);
+    t3 = !(fiA &gt; fiB);
+    t4 = fiA.earlier(fiB);
+    t5 = !fiA.later(fiB);
+    size_t sa = fiA.size();
+    size_t sb = fiB.size();
+    t6 = fiA.larger(fiB);
+    t7 = !fiA.smaller(fiB);
+    return checkResult(
+      t1 && t2 && t3 && t4 && t5 && t6 && t7, 
+      "testNameCompare"
+    );
+  }</section>
+  bool test()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaa">{
+    bool t1, t2, t3, t4, t5;
+    t1 = doTest(&TestFileInfo::testConstruction);
+    t2 = doTest(&TestFileInfo::testName);
+    t3 = doTest(&TestFileInfo::testDate);
+    t4 = doTest(&TestFileInfo::testSize);
+    t5 = doTest(&TestFileInfo::testNameCompare);
+    return t1 && t2 && t3 && t4 && t5;
+  }</section>
+private:
+  const std::string testFilePath;
+}</section>;
+
+class TestPath : public TestBase&lt;TestPath&gt;
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaa">{
+public:
+  TestPath() : testFilePath("..\\FileSystemDemo\\FileSystem.cpp")
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaaa">{
+    std::cout &lt;&lt; "\n\n  Testing Path class";
+  }</section>
+  bool TestGetFullFileSpec()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaaaa">{
+    std::string currPath = Directory::getCurrentDirectory();
+    std::string fileSpec = Path::getFullFileSpec(".");
+    return checkResult(currPath == fileSpec, "TestGetFullFileSpec");
+  }</section>
+  bool TestGetPath()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaaaaa">{
+    bool t1, t2;
+    std::string path = Path::getPath("..\\foobar\\someFile.txt");
+    std::string expected = "..\\foobar\\";
+    t1 = path == expected;
+    path = Path::getPath("../foobar/someFile.txt");
+    expected = "../foobar/";
+    t2 = path == expected;
+    return checkResult(t1 && t2, "TestGetPath");
+  }</section>
+  bool TestGetName()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaaaaaa">{
+    bool t1, t2, t3;
+    std::string name = Path::getName("..\\foobar\\someFile.txt");
+    std::string expected = "someFile.txt";
+    t1 = name == expected;
+    name = Path::getName("../foobar/someFile.txt", false);
+    expected = "someFile";
+    t2 = name == expected;
+    name = Path::getName("..\\foobar\\someFile");
+    expected = "someFile";
+    t3 = name == expected;
+    return checkResult(t1 && t2 && t3, "TestGetName");
+  }</section>
+  bool TestGetExt()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaaaaaaa">{
+    bool t1, t2, t3, t4, t5;
+    std::string ext = Path::getExt("../foobar/someFile.txt");
+    std::string expected = "txt";
+    t1 = ext == expected;
+    ext = Path::getExt("../foobar/someFile.txt");
+    expected = "txt";
+    t2 = ext == expected;
+    ext = Path::getExt("../foobar/someFile");
+    expected = "";
+    t3 = ext == expected;
+    ext = Path::getExt("../someDir/someFile.cpp");
+    expected = "cpp";
+    t4 = ext == expected;
+    ext = Path::getExt("*.cpp");
+    expected = "cpp";
+    t5 = ext == expected;
+    return checkResult(t1 && t2 && t3 && t4 && t5, "TestGetExt");
+  }</section>
+  bool TestFileSpec()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaaaaaaaa">{
+    bool t1, t2, t3;
+    std::string path = "./foo";
+    std::string name = "bar.txt";
+    std::string expected = "./foo/bar.txt";
+    std::string fileSpec = Path::fileSpec(path,name);
+    t1 = fileSpec == expected;
+    path = "..\\foo";
+    name = "bar";
+    expected = "..\\foo\\bar";
+    fileSpec = Path::fileSpec(path,name);
+    t2 = fileSpec == expected;
+    path = "C:\\foo";
+    name = "bar.cpp";
+    expected = "C:\\foo\\bar.cpp";
+    fileSpec = Path::fileSpec(path,name);
+    t3 = fileSpec == expected;
+    return checkResult(t1 && t2 && t3, "TestFileSpec");
+  }</section>
+  bool test()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaaaaaaaaa">{
+    bool t1, t2, t3, t4, t5;
+    t1 = doTest(&TestPath::TestGetFullFileSpec);
+    t2 = doTest(&TestPath::TestGetPath);
+    t3 = doTest(&TestPath::TestGetName);
+    t4 = doTest(&TestPath::TestGetExt);
+    t5 = doTest(&TestPath::TestFileSpec);
+    return t1 && t2 && t3 && t4 && t5;
+  }</section>
+private:
+  const std::string testFilePath;
+}</section>;
+
+class TestDirectory : public TestBase&lt;TestDirectory&gt;
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaaaaaaaaaa">{
+public:
+  TestDirectory() : testPath_("c:\\temp")
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaaaaaaaaaaa">{
+    std::cout &lt;&lt; "\n\n  Testing Directory class";
+  }</section>
+  bool TestCreateRemoveExists()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaaaaaaaaaaaa">{
+    bool t1, t2, t3;
+    std::string path = testPath_ + "\\TestDir";
+    t1 = Directory::create(path) || Directory::exists(path);
+    ::Sleep(100);
+    t2 = Directory::exists(path);
+    ::Sleep(100);
+    t3 = Directory::remove(path) || !Directory::exists(path);
+    return checkResult(t1 && t2 && t3, "TestCreateRemoveExists");
+  }</section>
+  bool TestGetAndSetCurrentDirectory()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaaaaaaaaaaaaa">{
+    bool t1, t2, t3;
+    std::string currPath = Directory::getCurrentDirectory();
+    t1 = Path::getFullFileSpec(".") == currPath;
+    Directory::setCurrentDirectory(testPath_);
+    std::string newPath = Directory::getCurrentDirectory();
+    t2 = newPath == Path::getFullFileSpec(testPath_);
+    Directory::setCurrentDirectory(currPath);
+    t3 = Directory::getCurrentDirectory() == currPath;
+    return checkResult(t1 && t2 && t3, "TestGetAndSetCurrentDirectory");
+  }</section>
+  bool TestGetFilesAndDirectories()
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaa">{
+    bool t1, t2, t3, t4, t5;
+
+    // test finding files by copying know files then getting them
+    std::string srcPath = "..\\FileSystemDemo";
+    std::string dstPath = testPath_ + "\\testDir1";
+
+    // create place to look
+    Directory::create(dstPath);
+    // store files there
+    std::string fileSpec1 = Path::fileSpec(srcPath,"FileSystem.h");
+    std::string fileSpec2 = Path::fileSpec(srcPath,"FileSystem.cpp");
+    std::string dstFile1 = Path::fileSpec(dstPath,"FileSystem.h"); 
+    File::copy(fileSpec1, dstFile1);
+    std::string dstFile2 = Path::fileSpec(dstPath,"FileSystem.cpp");
+    File::copy(fileSpec2, dstFile2);
+    t1 = File::exists(dstFile1) && File::exists(dstFile2);
+    // now test getFiles
+    std::vector&lt;std::string&gt; files = Directory::getFiles(dstPath);
+    std::vector&lt;std::string&gt;::iterator iter 
+      = std::find(files.begin(), files.end(), "FileSystem.h");
+    t2 = iter != files.end();
+    iter = std::find(files.begin(), files.end(), "FileSystem.cpp");
+    t3 = iter != files.end();
+
+    // test finding directories by creating them and then finding them
+    Directory::create(testPath_ + "\\testDir2");
+    Directory::create(testPath_ + "\\testDir3");
+    std::vector&lt;std::string&gt; dirs = Directory::getDirectories(testPath_);
+    iter = std::find(dirs.begin(), dirs.end(), "testDir2");
+    t4 = iter != dirs.end();
+    iter = std::find(dirs.begin(), dirs.end(), "testDir3");
+    t5 = iter != dirs.end();
+
+    // clean up
+    Directory::remove(testPath_ + "\\testDir1");  // fails because it has contents
+    Directory::remove(testPath_ + "\\testDir2");  
+    Directory::remove(testPath_ + "\\testDir3");
+
+    return checkResult(t1 && t2 && t3 && t4 &&t5, "TestGetFilesAndDirectories");
+  }</section>
+  bool test()  // overriding inherited test method
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaa">{
+    bool t1, t2, t3;
+    t1 = doTest(&TestDirectory::TestCreateRemoveExists);
+    t2 = doTest(&TestDirectory::TestGetAndSetCurrentDirectory);
+    t3 = doTest(&TestDirectory::TestGetFilesAndDirectories);
+    return t1 && t2 && t3;
+  }</section>
+private:
+  std::string testPath_;
+}</section>;
+
+bool test()
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa">{
+  bool t1, t2, t3, t4;
+  TestFile tf;
+  t1 = tf.test();
+  TestFileInfo tfi;
+  t2 = tfi.test();
+  TestPath tp;
+  t3 = tp.test();
+  TestDirectory td;
+  t4 = td.test();
+  return t1 && t2 && t3;
+}</section>
+int main(int argc, char* argv[])
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa">{
+  Title("Testing FileSystem namespace classes");
+
+  if(test())
+    std::cout &lt;&lt; "\n\n  all tests passed\n\n";
+  else
+    std::cout &lt;&lt; "\n\n  at least one test failed\n\n";
+}</section>
+</pre>
+</body>
+</html>

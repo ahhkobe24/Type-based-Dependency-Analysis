@@ -1,0 +1,366 @@
+<html>
+<head>
+<style>
+body{
+margin: 20px;
+color: black;
+background - color: #eee;
+font - family: Consolas;
+font - weight: 600;
+font - size: 110 % ;}
+.indent{ margin - left: 20px; margin - right: 20px;}
+h4{margin - bottom: 3px;margin - top: 3px;}
+</style>
+</head>
+<body>
+<h3>Generator.h</h3>
+<hr/>
+<pre>
+<script>function ShowIt(id) {
+if (id.style.display == "block")
+id.style.display = "none";
+else
+id.style.display = "block";
+};
+</script>
+<style>div{ display:inline }</style>#pragma once
+#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include "../Nosqldb/NoSqlDb.h"
+class Hgenerator
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(a)">+</span></div><section id = "a">{
+public:
+	Hgenerator(NoSQLDB::NoSqlDb&lt;std::string&gt;* db1)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aa)">+</span></div><section id = "aa">{
+		db = db1;
+	}</section>
+	void constrHtml();
+	void constrBody(std::string fielname, std::string filepath);
+	std::string addExpand(std::string s);
+	void constrHead(std::string s);
+	void constrDepend(std::vector&lt;std::string&gt; vec, std::string s);
+	void constrEnd(std::string s);
+	void setPath(std::string path);
+	void setFiles(std::vector&lt;std::string&gt; filepara);
+	std::string  replaceSpec(std::string s);
+	std::string exeCh(std::string s, int i, std::vector&lt;int&gt;& vec, std::string& index);
+	bool  isValid(std::string s);
+	void constrIndexHtml(std::vector&lt;std::string&gt; files);
+private:
+	NoSQLDB::NoSqlDb&lt;std::string&gt;* db;
+	std::string dirpath;
+	std::vector&lt;std::string&gt; files;
+}</section>;
+
+void  Hgenerator::setFiles(std::vector&lt;std::string&gt; filepara)
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaa)">+</span></div><section id = "aaa">{
+	files.insert(files.end(), filepara.begin(), filepara.end());
+}</section>
+
+void Hgenerator::setPath(std::string path)
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaa)">+</span></div><section id = "aaaa">{
+	dirpath = path;
+}</section>
+
+void Hgenerator::constrHtml()
+{
+	std::cout &lt;&lt; "----------Html files generating....---------" &lt;&lt; "\n";
+	for (auto tmp : files)
+	{
+		std::string a = tmp.substr(tmp.find_last_of("\\") + 1);
+		constrHead(a);
+		constrDepend(db-&gt;value(a).children, a);
+		constrBody(a,tmp);
+		constrEnd(a);
+	}
+	constrIndexHtml(files);
+	std::cout &lt;&lt; "----------Html file has been generated in ../Html directory, the main page is Index.html---------" &lt;&lt; "\n";
+}
+
+void Hgenerator::constrIndexHtml(std::vector&lt;std::string&gt; vec)
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaa)">+</span></div><section id = "aaaaa">{
+	constrHead("Index");
+	std::ofstream outhead;
+	outhead.open("C:/SU/course/CIS687/proj2/proj2//Html/Index.html", std::ios::app);
+	if (vec.size() != 0) {
+		outhead
+			&lt;&lt; "&lt;div class = \"indent\"&gt;" &lt;&lt; "\n"
+			&lt;&lt; "&lt;h4&gt;Index:&lt;/h4&gt;" &lt;&lt; "\n";
+		for (auto c : vec) {
+			std::string a = c.substr(c.find_last_of("\\") + 1);
+			outhead &lt;&lt; "&lt;a href = \"" &lt;&lt; a + ".html" &lt;&lt; "\"&gt;" + a + "&lt;/a&gt;" &lt;&lt; "\n";
+		}
+		outhead &lt;&lt; "&lt;/div&gt;" &lt;&lt; "\n"
+			&lt;&lt; "&lt;hr/&gt;" &lt;&lt; "\n";
+	}
+	outhead &lt;&lt; "&lt;pre&gt;" &lt;&lt; "\n";
+	outhead.close();
+	constrEnd("Index");
+}</section>
+
+void Hgenerator::constrDepend(std::vector&lt;std::string&gt; vec,std::string s)
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaa)">+</span></div><section id = "aaaaaa">{
+	std::ofstream outhead;
+	outhead.open("C:/SU/course/CIS687/proj2/proj2//Html/" + s+".html", std::ios::app);
+	if (vec.size() != 0) {
+		outhead
+			&lt;&lt; "&lt;div class = \"indent\"&gt;" &lt;&lt; "\n"
+			&lt;&lt; "&lt;h4&gt;Dependencies:&lt;/h4&gt;" &lt;&lt; "\n";
+		for (auto c : vec) {
+			outhead &lt;&lt; "&lt;a href = \"" &lt;&lt; c + ".html" &lt;&lt; "\"&gt;"+c+"&lt;/a&gt;" &lt;&lt; "\n";
+		}
+		outhead &lt;&lt; "&lt;/div&gt;" &lt;&lt; "\n"
+			&lt;&lt; "&lt;hr/&gt;" &lt;&lt; "\n";
+	}
+	outhead &lt;&lt; "&lt;pre&gt;" &lt;&lt; "\n";
+	outhead &lt;&lt; "&lt;script&gt;"
+		&lt;&lt; "function ShowIt(id) {"&lt;&lt;"\n"
+		&lt;&lt; "if (id.style.display == \"block\")"&lt;&lt;"\n"
+		&lt;&lt; "id.style.display = \"none\";"&lt;&lt;"\n"
+		&lt;&lt; "else"&lt;&lt;"\n"
+		&lt;&lt; "id.style.display = \"block\";"&lt;&lt;"\n"
+		&lt;&lt; "};"&lt;&lt;"\n"
+		&lt;&lt; "&lt;/script&gt;"&lt;&lt;"\n";
+	outhead &lt;&lt; "&lt;style&gt;"
+		&lt;&lt; "div{ display:inline }"
+		&lt;&lt; "&lt;/style&gt;";
+	outhead.close();
+}</section>
+
+void Hgenerator::constrHead(std::string s)
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaa)">+</span></div><section id = "aaaaaaa">{
+	std::ofstream outhead;
+	
+	outhead.open("C:/SU/course/CIS687/proj2/proj2//Html/"+s + ".html");
+	//std::string sourcefile;
+	outhead &lt;&lt; "&lt;html&gt;" &lt;&lt; "\n" &lt;&lt; "&lt;head&gt;" &lt;&lt; "\n" &lt;&lt; "&lt;style&gt;" &lt;&lt; "\n"
+		&lt;&lt; "body{" &lt;&lt; "\n"
+		&lt;&lt; "margin: 20px;" &lt;&lt; "\n"
+		&lt;&lt; "color: black;" &lt;&lt; "\n"
+		&lt;&lt; "background - color: #eee;" &lt;&lt; "\n"
+		&lt;&lt; "font - family: Consolas;" &lt;&lt; "\n"
+		&lt;&lt; "font - weight: 600;" &lt;&lt; "\n"
+		&lt;&lt; "font - size: 110 % ;}" &lt;&lt; "\n";
+
+	outhead &lt;&lt; ".indent{ margin - left: 20px; margin - right: 20px;}" &lt;&lt; "\n";
+	outhead &lt;&lt; "h4{margin - bottom: 3px;margin - top: 3px;}" &lt;&lt; "\n";
+	outhead &lt;&lt; "&lt;/style&gt;" &lt;&lt; "\n";
+	outhead &lt;&lt; "&lt;/head&gt;" &lt;&lt; "\n";
+	outhead &lt;&lt; "&lt;body&gt;" &lt;&lt; "\n";
+	outhead &lt;&lt; "&lt;h3&gt;"&lt;&lt;s&lt;&lt;"&lt;/h3&gt;" &lt;&lt; "\n" &lt;&lt; "&lt;hr/&gt;" &lt;&lt; "\n";
+	outhead.close();
+}</section>
+
+void Hgenerator::constrEnd(std::string s)
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaa)">+</span></div><section id = "aaaaaaaa">{
+	std::ofstream outend;
+	outend.open("C:/SU/course/CIS687/proj2/proj2//Html/" + s + ".html", std::ios::app);
+	outend &lt;&lt; "&lt;/pre&gt;" &lt;&lt; "\n"
+		&lt;&lt; "&lt;/body&gt;" &lt;&lt; "\n"
+		&lt;&lt; "&lt;/html&gt;" &lt;&lt; "\n";
+	outend.close();
+}</section>
+void Hgenerator::constrBody(std::string fielname,std::string filepath)
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaa)">+</span></div><section id = "aaaaaaaaa">{
+	
+	std::ifstream in;
+	//std::cout &lt;&lt; dirpath +"1/"+ s &lt;&lt; "\n";
+	in.open(filepath);
+	std::string sourcefile;
+	std::ofstream out;
+	out.open("C:/SU/course/CIS687/proj2/proj2//Html/"+ fielname +".html", std::ios::app);
+	
+	while (!in.eof())
+	{
+	
+		char arrstr[2048];
+		in.getline(arrstr,2000);
+		sourcefile.append(arrstr);
+		sourcefile += '\n';
+	}
+	std::string nospec = replaceSpec(sourcefile);
+	//std::cout &lt;&lt; nospec;
+	//std::cout &lt;&lt; "\n" &lt;&lt; fielname &lt;&lt; "****************\n";
+	std::string finalstr = addExpand(nospec);
+
+	out &lt;&lt; finalstr;
+	out.close();
+	in.close();
+	
+}</section>
+
+/*{{{{{{{{{{*/
+//{{{{
+std::string Hgenerator::addExpand(std::string s)
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaa">{
+	std::string index = "a"; bool isSpec = false; bool isFirstdouble = false; bool isFirstsingle = false; std::vector&lt;int&gt; vec; //vec.resize(500);
+	std::string s1; bool isFirstcomm = false; bool isFirstlinecomm = false;
+	for (int i = 0; i &lt; s.length(); i++) {
+		if (s[i] == '/'&&s[i + 1] == '/'&&isFirstdouble == false && isFirstsingle == false&& isFirstcomm == false && isFirstlinecomm==false)
+		{isSpec = true; s1 += s[i]; isFirstlinecomm = true; continue;}
+		if (s[i] == '\n'&&isFirstdouble == false && isFirstsingle == false && isFirstcomm == false && isFirstlinecomm == true)
+		{isSpec = false; s1 += s[i]; isFirstlinecomm = false; continue;}
+		if (s[i] == '/'&&s[i +1] == '*'&&isFirstdouble == false && isFirstsingle == false&& isFirstcomm==false)
+		{isSpec = true; s1 += s[i];  isFirstcomm = true; continue;}
+		if (s[i] == '*'&&s[i + 1] == '/'&&isFirstdouble == false && isFirstsingle == false&&isFirstcomm==true)
+		{isSpec = false; s1 += s[i]; isFirstcomm = false; continue;}
+		if (s[i] == '\''&&s[i-1] != '\\' && isFirstdouble == false && isFirstcomm == false && isFirstlinecomm == false)
+		{
+			if (isFirstsingle == false)
+			{isFirstsingle = true;isSpec = true;}else
+			{isFirstsingle = false;isSpec = false;}
+			s1 += s[i];
+			continue;
+		}
+		if (s[i] == '\''&&s[i - 1] == '\\'&&s[i - 2] == '\\'&&isFirstdouble == false && isFirstsingle == true && isFirstcomm == false && isFirstlinecomm == false)
+		{
+			isFirstsingle = false;isSpec = false;s1 += s[i];continue;
+		}
+		if (s[i] == '"'&&s[i - 1] != '\\'&& isFirstsingle==false && isFirstcomm == false && isFirstlinecomm == false)
+       {
+			if (isFirstdouble == false) {isFirstdouble = true;isSpec = true;}else
+			{ isFirstdouble = false;isSpec = false;}
+			s1 += s[i];
+			continue;
+		}
+		if (s[i] == '"'&&s[i - 1] == '\\'&&s[i - 2] == '\\'&&isFirstdouble == true && isFirstsingle == false && isFirstcomm == false && isFirstlinecomm == false)
+		{
+			isFirstdouble = false;isSpec = false;s1 += s[i];continue;
+		}
+		if (isSpec == false)
+		{
+			s1 += exeCh(s, i, vec, index);
+			continue;
+		}
+		s1 += s[i];
+	}
+	return s1;
+}</section>
+
+std::string  Hgenerator::exeCh(std::string s, int i, std::vector&lt;int&gt;& vec, std::string& index)
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaa">{
+	std::string s2;
+	switch (s[i]) <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaa">{
+	case '{':
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaa">{
+		std::string prefix;
+		for (int a = i - 50; a &lt; i; a++)
+		{
+			prefix += s[a];
+		}
+		if ( isValid(prefix))
+		{
+			if (vec.size() == 0) {
+				s2 += "&lt;div class = \"wrapper\"&gt;";
+				s2 += "&lt;span  style=\"width:30px; height:20px; color:red;\"  onclick=\"ShowIt(" + index + ")\"&gt;+&lt;/span&gt;";
+				s2 += "&lt;/div&gt;&lt;section id = \"" + index + "\"&gt;";
+				s2 += s[i];index += "a";vec.push_back(1);
+			}
+			else if(vec.back() == 0) {
+					vec.push_back(0);s2 += s[i];
+				}
+			else if (vec.back() == 1) {
+				s2 += "&lt;div class = \"wrapper\"&gt;";
+				s2 += "&lt;span  style=\"width:30px; height:20px; color:red;\"  onclick=\"ShowIt(" + index + ")\"&gt;+&lt;/span&gt;";
+				s2 += "&lt;/div&gt;&lt;section id = \"" + index + "\"&gt;";
+				s2 += s[i];index += "a";vec.push_back(1);
+			}
+		}
+		else {
+			vec.push_back(0);s2 += s[i];
+		}
+		break;
+	}</section>
+	case '}':
+	{
+		s2 += s[i];
+		if (vec.back() == 1) s2 += "&lt;/section&gt;";
+		if(vec.size()&gt;0)vec.pop_back();
+		break;
+	}
+	default:
+		s2 += s[i];
+	}</section>
+	return s2;
+}</section>
+
+std::string  Hgenerator::replaceSpec(std::string s)
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaa">{
+	std::string s3;
+	for (int i = 0; i &lt; s.length(); i++)
+	{
+		switch (s[i]) {
+		case '&lt;':
+			s3 += "&lt;";
+			break;
+		case '&gt;':
+			s3 += "&gt;";
+			break;
+		default:
+			s3 += s[i];
+		}
+	}
+	return s3;
+}</section>
+
+bool  Hgenerator::isValid(std::string s)
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaaaa">{
+	//if (s.find("for") &lt; 25)
+	//{
+	//	int i = s.find("for");
+	//	if (s[i-1] == ' ' || s[i-1] == '\n' || s[i-1] == '\t')
+	//	{
+	//		return false;
+	//	}
+	//}
+	//else if(s.find("while") &lt; 25)
+	//{
+	//	int i = s.find("while");
+	//	if (s[i-1] == ' ' || s[i-1] == '\n' || s[i-1] == '\t')
+	//		return false;
+	//}
+	//else if (s.find("try") &lt; 25)
+	//{
+	//	int i = s.find("try");
+	//	if (s[i-1] == ' ' || s[i-1] == '\n' || s[i-1] == '\t')
+	//		return false;
+	//}
+	//else if (s.find("catch") &lt; 25)
+	//{
+	//	int i = s.find("catch");
+	//	if (s[i - 1] == ' ' || s[i - 1] == '\n' || s[i - 1] == '\t')
+	//		return false;
+	//}
+	//else if (s.find("do") &lt; 25 )
+	//{
+	//	int i = s.find("do");
+	//	if (s[i - 1] == ' ' || s[i - 1] == '\n' || s[i - 1] == '\t')
+	//		return false;
+	//}
+	//else if (s.find("if") &lt; 25)
+	//{
+	//	int i = s.find("if");
+	//	if (s[i - 1] == ' ' || s[i - 1] == '\n' || s[i - 1] == '\t')
+	//		return false;
+	//}
+	//else if (s.find("switch") &lt; 25 )
+	//{
+	//	int i = s.find("switch");
+	//	if (s[i - 1] == ' ' || s[i - 1] == '\n' || s[i - 1] == '\t')
+	//		return false;
+	//}
+	//else if (s.find("case") &lt; 25)
+	//{
+	//	int i = s.find("case");
+	//	if (s[i - 1] == ' ' || s[i - 1] == '\n' || s[i - 1] == '\t')
+	//		return false;
+	//}
+	if(s.find("for") &gt; 200 && s.find("catch") &gt; 200 && s.find("enum") &gt; 200 && s.find("if") &gt; 200 && s.find("while") &gt; 200 && s.find("=") &gt; 200 && s.find("try")&gt;200 && s.find("else")&gt;200 && s.find("do")&gt;200)
+	{
+			return true;
+	}
+	return false;
+}</section>
+</pre>
+</body>
+</html>

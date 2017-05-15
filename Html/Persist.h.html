@@ -1,0 +1,305 @@
+<html>
+<head>
+<style>
+body{
+margin: 20px;
+color: black;
+background - color: #eee;
+font - family: Consolas;
+font - weight: 600;
+font - size: 110 % ;}
+.indent{ margin - left: 20px; margin - right: 20px;}
+h4{margin - bottom: 3px;margin - top: 3px;}
+</style>
+</head>
+<body>
+<h3>Persist.h</h3>
+<hr/>
+<div class = "indent">
+<h4>Dependencies:</h4>
+<a href = "NoSqlDb.h.html">NoSqlDb.h</a>
+<a href = "CppProperties.h.html">CppProperties.h</a>
+<a href = "XmlUtilities.h.html">XmlUtilities.h</a>
+</div>
+<hr/>
+<pre>
+<script>function ShowIt(id) {
+if (id.style.display == "block")
+id.style.display = "none";
+else
+id.style.display = "block";
+};
+</script>
+<style>div{ display:inline }</style>#pragma once
+#pragma once
+/////////////////////////////////////////////////////////////////////
+// Persist.h - store and retrieve NoSqlDb contents                 //
+// ver 2.0                                                         //
+// Jim Fawcett, CSE687 - Object Oriented Design, Spring 2017       //
+/////////////////////////////////////////////////////////////////////
+/*
+* Package Operations:
+* -------------------
+* This package defines a single class, Persist, that provides methods
+* save and restore to save db contents in an XML string, and restore
+* or create a new db from the XML.
+*
+* The Persist class also provides methods saveToFile and restoreFromFile
+* that use save and restore.
+*
+* Required Files:
+* ---------------
+*   NoSqlDb.h, NoSqlDb.cpp,
+*   CppProperties.h, CppProperties.cpp,
+*   XmlUtilities.h, XmlUtilities.cpp,
+*   Display.h, Display.cpp
+*
+* Maintenance History:
+*---------------------
+* ver 2.0 : 19 Feb 2017
+* - Removed wrapper classes that were introduced in version 1.0.
+*   Those seemed like a good idea, but turned out to add to the
+*   complexity without providing a lot of generality.
+* - The wrapper functionality is now being provided with an
+*   XmlConvert class, from XmlUtilities, that provides generic
+*   conversions to and from XML, and allows specializations to
+*   support needs of specific Data classes.
+* - See XmlUtilities::XmlConvert&lt;T&gt; for details.
+* ver 1.0 : 06 Feb 2017
+* - first release
+*/
+
+#include "NoSqlDb.h"
+#include "CppProperties.h"
+#include "../Xml/XmlUtilities.h"
+#include &lt;fstream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+
+namespace NoSQLDB
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(a)">+</span></div><section id = "a">{
+	/////////////////////////////////////////////////////////
+	// Record class is not being used, but is here as a
+	// reminder for future refactoring.
+	//
+	template&lt;typename Data&gt;
+	class Record
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aa)">+</span></div><section id = "aa">{
+	public:
+		Property&lt;Key&gt; key;
+		Property&lt;Element&lt;Data&gt;&gt; element;
+	}</section>;
+	/////////////////////////////////////////////////////////
+	// Persist class holds a reference to db and uses
+	// that to save and restore the db data.
+	//
+	// I plan to change the reference to a std::shared_ptr
+	// so the db can be changed.  Now we have to make a new
+	// instance of Persist to save a second db.
+	//
+	template&lt;typename Data&gt;
+	class Persist
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaa)">+</span></div><section id = "aaa">{
+	public:
+		using Xml = std::string;
+		using SPtr = std::shared_ptr&lt;XmlProcessing::AbstractXmlElement&gt;;
+		using SPtrs = std::vector&lt;SPtr&gt;;
+
+		Persist(NoSqlDb&lt;Data&gt;& db) : db_(db) <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaa)">+</span></div><section id = "aaaa">{}</section>
+		Xml save();
+		void restore(const Xml& xml);
+		bool saveToFile(const std::string& fileSpec);
+		bool restoreFromFile(const std::string& fileSpec);
+		std::string compress(const Xml& xml);
+	private:
+		NoSqlDb&lt;Data&gt;& db_;
+		std::string getTextBodyFromElement(SPtr sPtr);
+		std::string getTextBodyFromElement(SPtrs sPtrs);
+	}</section>;
+
+	//----&lt; saves db contents to file, using save &gt;--------------------
+
+	template&lt;typename Data&gt;
+	bool Persist&lt;Data&gt;::saveToFile(const std::string& fileSpec)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaa)">+</span></div><section id = "aaaaa">{
+		std::ofstream out(fileSpec);
+		if (!out.good())
+			return false;
+		Persist&lt;Data&gt; persist(db_);
+		Xml xml = persist.save();
+		out &lt;&lt; xml;
+		out.close();
+		return true;
+	}</section>
+	//----&lt; compresses xml string &gt;------------------------------------
+
+	template&lt;typename Data&gt;
+	std::string Persist&lt;Data&gt;::compress(const Xml& xml)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaa)">+</span></div><section id = "aaaaaa">{
+		std::string compressed;
+		for (char ch : xml)
+		{
+			if (ch == '\n' || ch == '\t' || ch == ' ')
+				continue;
+			compressed += ch;
+		}
+		return compressed;
+	}</section>
+	//----&lt; restores db contents from file, using restore &gt;------------
+
+	template&lt;typename Data&gt;
+	bool Persist&lt;Data&gt;::restoreFromFile(const std::string& fileSpec)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaa)">+</span></div><section id = "aaaaaaa">{
+		//std::string newFS = "C:\\Users\\James\\Desktop\\InstrSolProject1S2017\\Project1.xml";
+		std::ifstream in(fileSpec);
+		if (!in.good())
+		{
+			std::cout &lt;&lt; "\n  failed to open file";
+			return false;
+		}
+		Xml xml;
+
+		// build XML string from file
+
+		while (in.good())
+		{
+			char ch = in.get();
+
+			/////////////////////////////////////////////////////
+			// This code removes whitespace from XML contents
+			// but is unnecessart and adds a small CPU load.
+			// I left it here because I intent to use it in
+			// another package, for display.
+			/////////////////////////////////////////////////////
+			// if (ch == '\n' || ch == '\t' || ch == ' ')
+			//   continue;
+			/////////////////////////////////////////////////////
+
+			if (!in.good())
+				break;
+			xml += ch;
+		}
+		in.close();
+
+		restore(xml);
+		return true;
+	}</section>
+	//----&lt; save db contents to XML string &gt;---------------------------
+
+	template&lt;typename Data&gt;
+	typename Persist&lt;Data&gt;::Xml Persist&lt;Data&gt;::save()
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaa)">+</span></div><section id = "aaaaaaaa">{
+		using SPtr = std::shared_ptr&lt;XmlProcessing::AbstractXmlElement&gt;;
+
+		SPtr pDbRoot = XmlProcessing::makeTaggedElement("noSqlDb");
+		XmlProcessing::XmlDocument doc;
+		doc.docElement()-&gt;addChild(pDbRoot);
+
+		// This works too.
+		// XmlProcessing::XmlDocument doc(XmlProcessing::makeDocElement(pDbRoot));
+
+		Keys keys = db_.keys();
+		for (Key k : keys)
+		{
+			SPtr pRecord = XmlProcessing::makeTaggedElement("record");
+			SPtr pKey = XmlProcessing::makeTaggedElement("key");
+			SPtr pText = XmlProcessing::makeTextElement(Utilities::Convert&lt;Key&gt;::toString(k));
+			pKey-&gt;addChild(pText);
+			pRecord-&gt;addChild(pKey);
+
+			Element&lt;Data&gt; elem = db_.value(k);
+			SPtr pName = XmlProcessing::makeTaggedElement("name", static_cast&lt;std::string&gt;(elem.name));
+			pRecord-&gt;addChild(pName);
+
+			SPtr pCata = XmlProcessing::makeTaggedElement("category", static_cast&lt;std::string&gt;(elem.category));
+			pRecord-&gt;addChild(pCata);
+
+
+			SPtr pChildren = XmlProcessing::makeTaggedElement("children");
+			Keys childKeys = elem.children;
+			for (Key child : childKeys)
+			{
+				SPtr pChild = XmlProcessing::makeTaggedElement("childKey", static_cast&lt;std::string&gt;(child));
+				pChildren-&gt;addChild(pChild);
+			}
+			pRecord-&gt;addChild(pChildren);
+
+			Data data = elem.data;
+			SPtr pData = XmlProcessing::XmlConvert&lt;Data&gt;::toXmlElement(data, "data");
+			pRecord-&gt;addChild(pData);
+
+			pDbRoot-&gt;addChild(pRecord);
+		}
+		return doc.toString();
+	}</section>
+	//----&lt; retrive db contents from XML string &gt;----------------------
+	/*
+	* Private helper function - provides safe extraction of element text
+	* from single element pointer.
+	*/
+	template&lt;typename Data&gt;
+	std::string Persist&lt;Data&gt;::getTextBodyFromElement(SPtr sPtr)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaa)">+</span></div><section id = "aaaaaaaaa">{
+		if (sPtr-&gt;children().size() == 0)
+			return "";
+		return trim(sPtr-&gt;children()[0]-&gt;value());
+	}</section>
+	/*
+	* Private helper function - provides safe extraction of element text
+	* from the first element pointer in a vector of element pointers.
+	*/
+	template&lt;typename Data&gt;
+	std::string Persist&lt;Data&gt;::getTextBodyFromElement(SPtrs sPtrs)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaa">{
+		if (sPtrs.size() == 0)
+			return "";
+		SPtr sPtr = sPtrs[0];
+		if (sPtr-&gt;children().size() == 0)
+			return "";
+		return trim(sPtr-&gt;children()[0]-&gt;value());
+	}</section>
+	/*
+	* This is where the restoration takes place.
+	*/
+	template&lt;typename Data&gt;
+	void Persist&lt;Data&gt;::restore(const Xml& xml)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaa">{
+		using SPtr = std::shared_ptr&lt;AbstractXmlElement&gt;;
+		using SPtrs = std::vector&lt;SPtr&gt;;
+
+		XmlDocument doc(xml, XmlDocument::str);
+		SPtrs pRecords = doc.descendents("record").select();
+		for (SPtr pRecord : pRecords)
+		{
+			XmlDocument doc;
+			doc.docElement()-&gt;addChild(pRecord);
+
+			Key key = getTextBodyFromElement(doc.element("key").select());
+
+			Name name = getTextBodyFromElement(doc.element("name").select());
+
+			Category category = getTextBodyFromElement(doc.element("category").select());
+
+			Children children;
+			SPtrs pChildren = doc.descendents("childKey").select();
+			for (SPtr pChild : pChildren)
+			{
+				children.push_back(getTextBodyFromElement(pChild));
+			}
+
+			SPtr pData = doc.element("data").select()[0];
+
+			Element&lt;Data&gt; elem(name, category);
+			elem.children = children;
+			elem.data = XmlConvert&lt;Data&gt;::fromXmlElement(pData);
+
+			bool saved = db_.saveRecord(key, elem);  // save new record
+			if (!saved)
+				db_.saveValue(key, elem);  // overwrite old record element
+		}
+	}</section>
+}</section>
+
+</pre>
+</body>
+</html>

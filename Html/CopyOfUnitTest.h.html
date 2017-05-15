@@ -1,0 +1,110 @@
+<html>
+<head>
+<style>
+body{
+margin: 20px;
+color: black;
+background - color: #eee;
+font - family: Consolas;
+font - weight: 600;
+font - size: 110 % ;}
+.indent{ margin - left: 20px; margin - right: 20px;}
+h4{margin - bottom: 3px;margin - top: 3px;}
+</style>
+</head>
+<body>
+<h3>CopyOfUnitTest.h</h3>
+<hr/>
+<pre>
+<script>function ShowIt(id) {
+if (id.style.display == "block")
+id.style.display = "none";
+else
+id.style.display = "block";
+};
+</script>
+<style>div{ display:inline }</style>#ifndef UNITTEST_H
+#define UNITTEST_H
+///////////////////////////////////////////////////////////////
+// UnitTest.cpp - Demonstrate unit testing framework         //
+// ver 1.1                                                   //
+// --------------------------------------------------------- //
+// copyright © Jim Fawcett, 2012, 2013                       //
+// All rights granted provided that this notice is retained  //
+// --------------------------------------------------------- //
+// Jim Fawcett, CSE687-Object Oriented Design, Spring 2013   //
+///////////////////////////////////////////////////////////////
+
+#include &lt;string&gt;
+#include &lt;iostream&gt;
+
+namespace Test
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(a)">+</span></div><section id = "a">{
+  void Title(const std::string& title, char ch='=')
+  {
+    std::cout &lt;&lt; "\n  " &lt;&lt; title;
+    std::cout &lt;&lt; "\n " &lt;&lt; std::string(title.size() + 2, ch);
+  }
+
+  template &lt;typename T&gt;
+  class TestBase
+  <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aa)">+</span></div><section id = "aa">{
+  public:
+
+    typedef bool (T::*Test) ();
+
+    virtual ~TestBase() <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaa)">+</span></div><section id = "aaa">{}</section>
+
+    // Your test driver implements this for each major test
+    // - call a sequence of doTest(TestN)s
+    //-----------------------------------------------------
+    virtual bool test()=0;
+
+    // Executes test functions inside a try block
+    //-------------------------------------------
+    bool doTest(Test atest) 
+    { 
+      try
+      {
+        return (dynamic_cast&lt;T*&gt;(this)-&gt;*atest)();
+      }
+      catch (std::exception& ex)
+      {
+        std::cout &lt;&lt; "\n  failed: " &lt;&lt; ex.what();
+        return false;
+      }
+      catch(...)
+      {
+        std::cout &lt;&lt; "\n  failed: thrown structured exception";
+        return false;
+      }
+    }
+    // Call this in your test functions to save duplicating output statements
+    //-----------------------------------------------------------------------
+    bool checkResult(bool predicate, std::string testname)
+    <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaa)">+</span></div><section id = "aaaa">{
+      std::string name = std::string(typeid(*this).name()) + "::" + testname;
+      name = name.substr(6, name.size() - 6);
+      if(predicate)
+        return passed(name);
+      else
+        return failed(name);
+    }</section>
+  protected:
+    bool passed(const std::string& name)
+    <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaa)">+</span></div><section id = "aaaaa">{
+      std::cout &lt;&lt; "\n  passed: " &lt;&lt; name;
+      return true;
+    }</section>
+    bool failed(const std::string& name)
+    <div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaa)">+</span></div><section id = "aaaaaa">{
+      std::cout &lt;&lt; "\n  failed: " &lt;&lt; name;
+      return false;
+    }</section>
+  }</section>;
+}</section>
+#endif
+
+</pre>
+</body>
+</html>

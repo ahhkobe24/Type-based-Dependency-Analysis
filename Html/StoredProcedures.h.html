@@ -1,0 +1,346 @@
+<html>
+<head>
+<style>
+body{
+margin: 20px;
+color: black;
+background - color: #eee;
+font - family: Consolas;
+font - weight: 600;
+font - size: 110 % ;}
+.indent{ margin - left: 20px; margin - right: 20px;}
+h4{margin - bottom: 3px;margin - top: 3px;}
+</style>
+</head>
+<body>
+<h3>StoredProcedures.h</h3>
+<hr/>
+<pre>
+<script>function ShowIt(id) {
+if (id.style.display == "block")
+id.style.display = "none";
+else
+id.style.display = "block";
+};
+</script>
+<style>div{ display:inline }</style>#pragma once
+#pragma once
+/////////////////////////////////////////////////////////////////////
+// StoredProcedures.h - place to store pre-defined lambda queries  //
+// ver 1.0                                                         //
+// Jim Fawcett, CSE687 - Object Oriented Design, Spring 2017       //
+/////////////////////////////////////////////////////////////////////
+/*
+* Package Operations:
+* -------------------
+* This package defines a single class, StoredProcedures that provides
+* a container to store pre-defined query lambdas.
+*
+* Required Files:
+* ---------------
+*   Queries.h, Queries.cpp,
+*
+* Maintenance History:
+*---------------------
+* ver 1.0 : 22 Feb 2017
+* - first release
+*
+* ToDo:
+* -----
+* This package is incomplete.  We need to move the testing to
+* StoredProcedures.cpp, and provide testing code in main.
+*/
+
+#include "../Queries/Queries.h"
+#include &lt;unordered_map&gt;
+
+namespace NoSQLDB
+<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(a)">+</span></div><section id = "a">{
+	template&lt;typename Data&gt;
+	class StoredProcedures
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aa)">+</span></div><section id = "aa">{
+	public:
+		using QueryType = typename Query&lt;Data&gt;::QueryType;
+
+		StoredProcedures();
+		QueryType getQuery(const std::string& qid);
+		void accept(const std::string& qid, QueryType query);
+		bool hasQuery(const std::string& qid);
+	private:
+		std::unordered_map&lt;std::string, QueryType&gt; procedures_;
+	}</section>;
+	//----&lt; retrieve a query from query storage by id &gt;----------------
+
+	template&lt;typename Data&gt;
+	typename StoredProcedures&lt;Data&gt;::QueryType StoredProcedures&lt;Data&gt;::getQuery(const std::string& qid)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaa)">+</span></div><section id = "aaa">{
+		if (hasQuery(qid))
+			return procedures_[qid];
+		return Query&lt;Data&gt;::QueryType();
+	}</section>
+	//----&lt; does query storage have a query with this id? &gt;------------
+
+	template&lt;typename Data&gt;
+	bool StoredProcedures&lt;Data&gt;::hasQuery(const std::string& qid)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaa)">+</span></div><section id = "aaaa">{
+		return (procedures_.find(qid) != procedures_.end());
+	}</section>
+	//----&lt; store or overwrite query in query store &gt;------------------
+
+	template&lt;typename Data&gt;
+	void StoredProcedures&lt;Data&gt;::accept(const std::string& qid, QueryType query)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaa)">+</span></div><section id = "aaaaa">{
+		procedures_[qid] = query;
+	}</section>
+	//----&lt; initialize query store &gt;-----------------------------------
+
+	template&lt;typename Data&gt;
+	StoredProcedures&lt;Data&gt;::StoredProcedures()
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaa)">+</span></div><section id = "aaaaaa">{
+		accept("getKeyIfExists", getKeyIfExists);
+		accept("getChildren", getChildren);
+		accept("getRexexKeyMatch", getRegexKeyMatch);
+		accept("getRegexNameMatch", getRegexNameMatch);
+		accept("getRegexCategoryMatch", getRegexCategoryMatch);
+		accept("getRegexDataMatch", getRegexDataMatch);
+		accept("getDateIntervalMatch", getDateIntervalMatch);
+	}</section>
+	//----&lt; query does key exist? &gt;------------------------------------
+
+	template&lt;typename Data&gt;
+	void TestQuery1(const std::string& arg)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaa)">+</span></div><section id = "aaaaaaa">{
+		Query&lt;Data&gt;::QueryType getKeyIfExists = [](const std::string& arg, Keys keys)
+		{
+			NoSQLDB::Keys returnKeys;
+			std::cout &lt;&lt; "\n    getKeyIfExists Query for \"" &lt;&lt; arg &lt;&lt; "\"";
+			for (NoSQLDB::Key k : keys)
+			{
+				if (k == arg)
+				{
+					returnKeys.push_back(static_cast&lt;std::string&gt;(k));
+					break;
+				}
+			}
+			return returnKeys;
+		};
+
+		//std::cout &lt;&lt; "\n  results of query #1:";
+		//Keys keys = pDb-&gt;keys();
+		//keys = getKeyIfExists(arg, keys);
+		//if (keys.size() == 1)
+		//  std::cout &lt;&lt; "\n    found key \"" &lt;&lt; arg &lt;&lt; "\"";
+		//else
+		//  std::cout &lt;&lt; "\n    didn't find key \"" &lt;&lt; arg &lt;&lt; "\"";
+	}</section>
+	//----&lt; return child keys of specified element &gt;-------------------
+
+	template&lt;typename Data&gt;
+	void TestQuery2(const std::string& arg)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaa)">+</span></div><section id = "aaaaaaaa">{
+		Query&lt;Data&gt;::QueryType getChildren = [&](const std::string& arg, Keys keys)
+		{
+			NoSQLDB::Keys returnKeys;
+			std::cout &lt;&lt; "\n    getChildren Query for \"" &lt;&lt; arg &lt;&lt; "\"";
+			for (NoSQLDB::Key k : keys)
+			{
+				if (k == arg)
+				{
+					returnKeys = pDb-&gt;value(k).children;
+					break;
+				}
+			}
+			return returnKeys;
+		};
+
+		//std::cout &lt;&lt; "\n\n  results of query #2:";
+		//Keys keys = pDb-&gt;keys();
+		//keys = getChildren(arg, keys);
+		//if (keys.size() &gt; 0)
+		//{
+		//  std::cout &lt;&lt; "\n    found children : ";
+		//  for (Key k : keys)
+		//    std::cout &lt;&lt; k &lt;&lt; " ";
+		//}
+		//else
+		//  std::cout &lt;&lt; "\n    didn't find children for \"" &lt;&lt; arg &lt;&lt; "\"";
+	}</section>
+	//----&lt; return keys that match a specified regex pattern &gt;---------
+
+	template&lt;typename Data&gt;
+	void TestQuery3(const std::string& arg)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaa)">+</span></div><section id = "aaaaaaaaa">{
+		Query&lt;Data&gt;::QueryType getRegexKeyMatch = [&](const std::string& arg, Keys keys)
+		{
+			NoSQLDB::Keys returnKeys;
+			std::cout &lt;&lt; "\n    key pattern match Query for \"" &lt;&lt; arg &lt;&lt; "\"";
+			std::regex regx(arg);
+			for (NoSQLDB::Key k : keys)
+			{
+				if (std::regex_match(k, regx))
+				{
+					returnKeys.push_back(k);
+				}
+			}
+			return returnKeys;
+		};
+
+		//std::cout &lt;&lt; "\n\n  results of query #3:";
+		//Keys keys = pDb-&gt;keys();
+		//keys = getRegexKeyMatch(arg, keys);
+		//if (keys.size() &gt; 0)
+		//{
+		//  std::cout &lt;&lt; "\n    matches : ";
+		//  for (Key k : keys)
+		//    std::cout &lt;&lt; k &lt;&lt; " ";
+		//}
+		//else
+		//  std::cout &lt;&lt; "\n    didn't find match for \"" &lt;&lt; arg &lt;&lt; "\"";
+	}</section>
+	//----&lt; return elements with names that match a regex pattern &gt;----
+
+	template&lt;typename Data&gt;
+	void TestQuery4(const std::string& arg)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaa">{
+		Query&lt;Data&gt;::QueryType getRegexNameMatch = [&](const std::string& arg, Keys keys)
+		{
+			NoSQLDB::Keys returnKeys;
+			std::cout &lt;&lt; "\n    name pattern match Query for \"" &lt;&lt; arg &lt;&lt; "\"";
+			std::regex regx(arg);
+			for (NoSQLDB::Key k : keys)
+			{
+				Element&lt;Data&gt; elem = pDb-&gt;value(k);
+				if (std::regex_match(static_cast&lt;std::string&gt;(elem.name), regx))
+				{
+					returnKeys.push_back(k);
+				}
+			}
+			return returnKeys;
+		};
+
+		//std::cout &lt;&lt; "\n\n  results of query #4:";
+		//Keys keys = pDb-&gt;keys();
+		//keys = getRegexNameMatch(arg, keys);
+		//if (keys.size() &gt; 0)
+		//{
+		//  std::cout &lt;&lt; "\n    matches : ";
+		//  for (Key k : keys)
+		//    std::cout &lt;&lt; k &lt;&lt; " ";
+		//}
+		//else
+		//  std::cout &lt;&lt; "\n    didn't find match for \"" &lt;&lt; arg &lt;&lt; "\"";
+	}</section>
+	//----&lt; return elements with categories that match a pattern &gt;-----
+
+	template&lt;typename Data&gt;
+	void TestQuery5(const std::string& arg)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaa">{
+		Query&lt;Data&gt;::QueryType getRegexCategoryMatch = [&](const std::string& arg, Keys keys)
+		{
+			NoSQLDB::Keys returnKeys;
+			std::cout &lt;&lt; "\n    category pattern match Query for \"" &lt;&lt; arg &lt;&lt; "\"";
+			std::regex regx(arg);
+			for (NoSQLDB::Key k : keys)
+			{
+				Element&lt;Data&gt; elem = pDb-&gt;value(k);
+				if (std::regex_match(static_cast&lt;std::string&gt;(elem.category), regx))
+				{
+					returnKeys.push_back(k);
+				}
+			}
+			return returnKeys;
+		};
+
+		//std::cout &lt;&lt; "\n\n  results of query #5:";
+		//Keys keys = pDb-&gt;keys();
+		//keys = getRegexCategoryMatch(arg, keys);
+		//if (keys.size() &gt; 0)
+		//{
+		//  std::cout &lt;&lt; "\n    matches : ";
+		//  for (Key k : keys)
+		//    std::cout &lt;&lt; k &lt;&lt; " ";
+		//}
+		//else
+		//  std::cout &lt;&lt; "\n    didn't find match for \"" &lt;&lt; arg &lt;&lt; "\"";
+	}</section>
+	//----&lt; return elements with data that matches a pattern &gt;---------
+
+	template&lt;typename Data&gt;
+	void TestQuery6(const std::string& arg)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaa">{
+		Query&lt;Data&gt;::QueryType getRegexDataMatch = [&](const std::string& arg, Keys keys)
+		{
+			NoSQLDB::Keys returnKeys;
+			std::cout &lt;&lt; "\n    data pattern match Query for \"" &lt;&lt; arg &lt;&lt; "\"";
+			std::regex regx(arg);
+			for (NoSQLDB::Key k : keys)
+			{
+				Element&lt;Data&gt; elem = pDb-&gt;value(k);
+				std::string data = elem.data;
+				if (std::regex_match(data, regx))
+				{
+					returnKeys.push_back(k);
+				}
+			}
+			return returnKeys;
+		};
+
+		//std::cout &lt;&lt; "\n\n  results of query #6:";
+		//Keys keys = pDb-&gt;keys();
+		//keys = getRegexDataMatch(arg, keys);
+		//if (keys.size() &gt; 0)
+		//{
+		//  std::cout &lt;&lt; "\n    matches : ";
+		//  for (Key k : keys)
+		//    std::cout &lt;&lt; k &lt;&lt; " ";
+		//}
+		//else
+		//  std::cout &lt;&lt; "\n    didn't find match for \"" &lt;&lt; arg &lt;&lt; "\"";
+	}</section>
+	//----&lt; return elements with DateTimes in an interval &gt;------------
+
+	template&lt;typename Data&gt;
+	void TestQuery7(DateTime dt1, DateTime dt2)
+	<div class = "wrapper"><span  style="width:30px; height:20px; color:red;"  onclick="ShowIt(aaaaaaaaaaaaa)">+</span></div><section id = "aaaaaaaaaaaaa">{
+		Query&lt;Data&gt;::QueryType getDateIntervalMatch = [&](const std::string& arg, Keys keys)
+		{
+			NoSQLDB::Keys returnKeys;
+			Element&lt;Data&gt; elem1 = pDb-&gt;value(keys[0]);
+			DateTime dt;
+			elem1.dateTime = (dt + DateTime::makeDuration(2, 0, 0, 0));
+			pDb-&gt;saveValue(keys[0], elem1);
+			std::cout &lt;&lt; "\n    set dateTime of " &lt;&lt; keys[0] &lt;&lt; " to " &lt;&lt; static_cast&lt;DateTime&gt;(elem1.dateTime).time();
+
+			std::cout &lt;&lt; "\n    date interval match Query for dates between:";
+			std::cout &lt;&lt; "\n    " &lt;&lt; dt1.time() &lt;&lt; " and " &lt;&lt; dt2.time();
+
+			for (NoSQLDB::Key k : keys)
+			{
+				Element&lt;Data&gt; elem = pDb-&gt;value(k);
+				DateTime dt = elem.dateTime;
+				std::cout &lt;&lt; "\n    key : " &lt;&lt; k &lt;&lt; " has dateTime : " &lt;&lt; dt.time();
+				if (dt2 &lt; dt && dt &lt; dt1)
+				{
+					returnKeys.push_back(k);
+				}
+			}
+			return returnKeys;
+		};
+
+		//std::cout &lt;&lt; "\n\n  results of query #6:";
+		//Keys keys = pDb-&gt;keys();
+		//keys = getDateIntervalMatch("", keys);
+		//if (keys.size() &gt; 0)
+		//{
+		//  std::cout &lt;&lt; "\n    matches : ";
+		//  for (Key k : keys)
+		//    std::cout &lt;&lt; k &lt;&lt; " ";
+		//}
+		//else
+		//  std::cout &lt;&lt; "\n    didn't find match for DateTime interval";
+	}</section>
+
+}</section>
+</pre>
+</body>
+</html>
